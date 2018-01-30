@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
+#include <iostream>
+#include <sstream>
+#include "Dice.h"
 
 class Confederation
 {
