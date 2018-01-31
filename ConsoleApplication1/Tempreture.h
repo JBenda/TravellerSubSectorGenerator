@@ -13,6 +13,8 @@ public:
 		case 8:  case 9:			return  1;
 		case 10 :case 13: case 15:	return  2;
 		case 11: case 12:			return  6;
+		default: std::cerr << "atmo out of range" << std::endl;
+			return 0;
 		}
 	}
 };

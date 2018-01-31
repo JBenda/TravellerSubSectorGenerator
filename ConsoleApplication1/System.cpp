@@ -1,5 +1,8 @@
 #include "System.h"
-
+bool isIn(int v, int min, int max)
+{
+	return (min <= v && max >= v);
+}
 System::System()
 {
 	memset(systemInfo, 0, SYSTEM_INFO::END / 8 + (SYSTEM_INFO::END % 8 > 1 ? 1 : 0));
@@ -35,10 +38,77 @@ System::System()
 	if (population == 0)
 	{
 		tekkLvl = 0;
-		justize = Justize(0);
-		fraction = std::vector<Fraction>(0);
+		justize = std::make_shared<Justize>(0);
+		fraction = std::vector<std::shared_ptr<Fraction>> (0);
+		return;
 	}
 	
+	fraction.push_back(std::make_shared<Fraction>(population, true));
+	int numFractions = Dice::roleW3();
+	if (fraction[0]->getType() == 0 || fraction[0]->getType() == 7)
+		numFractions += 1;
+	else if (fraction[0]->getType() >= 10)
+		numFractions -= 1;
+	for (int i = 0; i < numFractions; ++i)
+	{
+		fraction.push_back(std::make_shared<Fraction>(population, false));
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		culture[i] = Dice::roleW66();
+	}
+
+	justize = std::make_shared<Justize>(fraction[0]->getType());
+
+	spacePort = SpacePort::getSpacePort(Dice::role2W6());
+
+	tekkLvl = TekkLvl::getTekkLvl(spacePort, size, atmosphere, water, population, fraction[0]->getType());
+	int r;
+	if (atmosphere >= 10 || (r = fraction[0]->getType(), r == 0) || r == 7 || r == 10
+		|| (r = justize->getJustizLvl(Justize::JUSTIZE_PARTS::WAPON), r == 0) || r >= 9)
+		travellerZone = ZONE::YELLOW;
+	else
+		travellerZone = ZONE::NEUTRAL;
+
+	//TRadeCodes
+	if (isIn(atmosphere, 4, 9) && isIn(water, 4, 8) && isIn(population, 5, 7))
+		tradeCode.push_back(Ag);
+	if (isIn(atmosphere, 2, 5) && isIn(water, 0, 3))
+		tradeCode.push_back(Ar);
+	if (size == 0 && atmosphere == 0 && water == 0)
+		tradeCode.push_back(As);
+	if (population >= 9)
+		tradeCode.push_back(Di);
+	if (isIn(population, 1, 3))
+		tradeCode.push_back(Due);
+	if (atmosphere <= 1 && water >= 1)
+		tradeCode.push_back(Ei);
+	if(size >= 5 && isIn(atmosphere, 4, 9) && isIn(water, 4, 8))
+		tradeCode.push_back(Ga);
+	if(tekkLvl >= 12)
+		tradeCode.push_back(Hi);
+	int a;
+	if((((a = atmosphere), a<=2) || a==4 || a==7 || a==9) && population >= 9)
+		tradeCode.push_back(In);
+	if(atmosphere >= 10 && water >= 1)
+		tradeCode.push_back(Li);
+	if(tekkLvl <= 5)
+		tradeCode.push_back(Lo);
+	if(atmosphere <= 3 && water <= 3 && population >= 6)
+		tradeCode.push_back(Na);
+	if(isIn(population, 4, 6))
+		tradeCode.push_back(Ni);
+	if(population == 0 && fraction[0]->getType() == 0 && justize->getJustizLvl((Justize::JUSTIZE_PARTS) 0) == 0)
+		tradeCode.push_back(Oed);
+	if ((atmosphere == 6 || atmosphere == 8) && isIn(population, 6, 8))
+		tradeCode.push_back(Re);
+	if(atmosphere == 0)
+		tradeCode.push_back(Va);
+	if(water >= 10)
+		tradeCode.push_back(Wa);
+	if(atmosphere >= 2 && water == 0)
+		tradeCode.push_back(Wue);
 }
 std::string System::getSystemCode()
 {
@@ -54,10 +124,3 @@ void System::setSystemInfo(SYSTEM_INFO type, bool value)
 	else
 		systemInfo[type / 8] &= ~(0x80 >> type % 8);
 }
-private:
-	std::vector<std::shared_ptr<Confederation>> confederation;
-	std::vector<std::shared_ptr<System>> communication;
-	std::vector<std::shared_ptr<System>> trade;
-	std::vector<Fraction> fraction;
-	uint8_t culture[3];
-	Justize justize;

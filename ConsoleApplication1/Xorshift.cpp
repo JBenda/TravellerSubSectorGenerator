@@ -1,5 +1,5 @@
 #include "Xorshift128.h"
-
+Xorshift128 Xorshift128::s_instance;
 void Xorshift128::setValues(uint32_t v1, uint32_t v2, uint32_t v3)
 {
 	_values[0] = v1;
