@@ -26,31 +26,54 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	//set Bases
 	//perhand
 }
-const float da = PI / 3.f;
-#include "SFML\Graphics.hpp"
-int Bezirk::dis(int pos1, int pos2)
+
+int Bezirk::disShortestTravPath(int pos1[2], int pos2[])
 {
-	sf::Vector2i p1, d;
-	p1 = { pos1 % dim[0], pos1 / dim[0]};
-	d = { pos2 % dim[0], pos2 / dim[0] };
-	d = p1 - d;
-	//BIg Hexagon and boundary check //TODO
+	std::map<int, int>::iterator itr[2];
+	itr[0] = posToId.find(pos1[0] + pos1[1] * dim[0]);
+	itr[1] = posToId.find(pos2[0] + pos2[1] * dim[0]);
+	if (itr[0] == posToId.end() || itr[1] == posToId.end())
+		return 0;
+	return map[itr[0]->second * systems.size() + itr[1]->second];
+}
+
+int Bezirk::getDis(int pos1[2], int pos2[2])
+{
+	return dis(pos1[0] + pos1[1] * dim[0], pos2[0] + pos2[1] * dim[0]);
+}
+
+int Bezirk::dis(int pos1, int pos2)	//Manhatten distance
+{
+	sf::Vector2i p1, p2;
+	p1 = { pos1 % dim[0], pos1 / dim[0] };
+	p2 = { pos2 % dim[0], pos2 / dim[0] };
+	int x[] = { p1.x, p2.x };
+	int z[] = { p1.y - (int)(p1.x / 2), p2.y - (int)(p2.x / 2) };
+	int y[] = { -x[0] - z[0], -x[1] - z[1] };
+	return std::max(std::abs(x[0]-x[1]), std::max(std::abs(y[0]-y[1]), std::abs(z[0]-z[1])));
 }
 
 void Bezirk::calculateRouts()
 {
-	map = (uint8_t*)malloc(dim[0] * dim[1] * sizeof(uint8_t));
-	memset(map, 0, dim[0] * dim[1] * sizeof(uint8_t));
+	int numSystems = systems.size();
+	std::cout << "NumSys= " << numSystems << std::endl;
+	map = (uint8_t*)malloc(numSystems * numSystems* sizeof(uint8_t));
+	memset(map, 0, numSystems * numSystems * sizeof(uint8_t));
 	std::map<int, std::shared_ptr<System>>::iterator itr[2];
 	int d;
 	int row = 0;
 	int colum = 0;
-	int numSystems = systems.size();
 	std::cout << "Size = " << numSystems << std::endl;
 	for (itr[0] = systems.begin(), row = 0; itr[0] != systems.end(); ++itr[0], ++row)
 	{
-		for (itr[1] = itr[0], itr[1] ++, colum = 0; itr[1] != systems.end(); ++itr[1], ++colum)
+		posToId[itr[0]->first] = row;
+		for (itr[1] = itr[0], itr[1] ++, colum = row + 1; itr[1] != systems.end(); ++itr[1], ++colum)
 		{
+			if (itr[0]->first == itr[1]->first)
+			{
+				std::cout << "ERROR" << std::endl;
+				continue;
+			}
 			if ((d = dis(itr[0]->first, itr[1]->first)) <= 2)
 			{
 				map[row * numSystems + colum] = d;
@@ -58,6 +81,8 @@ void Bezirk::calculateRouts()
 			}
 		}
 	}
+	char c;
+	return;
 	bool updated;
 	do {
 		updated = false;
@@ -90,8 +115,11 @@ void Bezirk::calculateRouts()
 			}
 		}
 	} while (updated);
+	std::cout << "Calculation" << std::endl;
+	std::cin >> c;
 	for (int i = 0; i < numSystems * numSystems; ++i)
-		std::cout << map[i] << (i % numSystems == 0 ? '\n' : ' ');
+		std::cout << (int)map[i] << (i % numSystems == 0 ? '\n' : ' ');
+	std::cin >> c;
 }
 
 std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)
