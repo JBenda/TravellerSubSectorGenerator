@@ -16,6 +16,7 @@ public:
 	bool isSystem(int x, int y) { return systems.count(y * dim[1] + x) != 0; }
 	int getDis(int pos1[2], int pos2[]);
 	int disShortestTravPath(int pos1[2], int pos2[]); // 0 = no path
+	void printMapLine(int pos[2]);
 private:
 	void calculateRouts();
 	int dis(int pos1, int pos2);

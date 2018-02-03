@@ -27,6 +27,18 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	//perhand
 }
 
+void Bezirk::printMapLine(int pos[2])
+{
+	int line = posToId.find(pos[0] + pos[1] * dim[0])->second;
+	int sysNum = systems.size();
+	for (int i = 0; i < sysNum; ++i)
+		std::cout << i << ' ';
+	std::cout << std::endl;
+	for (int i = 0; i < sysNum; ++i)
+		std::cout << (int)map[sysNum * line + i] << (i < 10 ? " " : "  ");
+	std::cout << std::endl;
+}
+
 int Bezirk::disShortestTravPath(int pos1[2], int pos2[])
 {
 	std::map<int, int>::iterator itr[2];
@@ -64,22 +76,39 @@ void Bezirk::calculateRouts()
 	int row = 0;
 	int colum = 0;
 	std::cout << "Size = " << numSystems << std::endl;
-	for (itr[0] = systems.begin(), row = 0; itr[0] != systems.end(); ++itr[0], ++row)
-	{
-		posToId[itr[0]->first] = row;
-		for (itr[1] = itr[0], itr[1] ++, colum = row + 1; itr[1] != systems.end(); ++itr[1], ++colum)
+	for(int j = 0; j < dim[1]; ++j)
+		for (int i = 0; i < dim[0]; ++i)
 		{
-			if (itr[0]->first == itr[1]->first)
+			if (this->isSystem(i, j))
+				posToId[i + j * dim[0]] = row++;
+		}
+	for (int j = 0; j < dim[1]; ++j)
+		for (int i = 0; i < dim[0]; ++i)
+		{
+			if (this->isSystem(i, j))
 			{
-				std::cout << "ERROR" << std::endl;
-				continue;
-			}
-			if ((d = dis(itr[0]->first, itr[1]->first)) <= 2)
-			{
-				map[row * numSystems + colum] = d;
-				map[colum * numSystems + row] = d;	//symetrie
+				int line = posToId.find(i + j * dim[0])->second;
+				for(int j2 = 0; j2 < dim[1]; ++j2)
+					for (int i2 = 0; i2 < dim[0]; ++i2)
+					{
+						if (i != i2 && j != j2)
+						{
+							if (this->isSystem(i2, j2))
+							{
+								uint8_t d = dis(i + j * dim[0], i2 + j2 * dim[1]);
+								if (d <= 1)
+								{
+									int r = posToId.find(i2 + j2 * dim[0])->second;
+									map[line * numSystems + r] = d;
+								}
+							}
+						}
+					}
 			}
 		}
+	for (int i = 0; i < numSystems * numSystems; ++i)
+	{
+		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : ' ');
 	}
 	char c;
 	return;
