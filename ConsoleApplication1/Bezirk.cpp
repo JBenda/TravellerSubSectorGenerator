@@ -49,6 +49,15 @@ int Bezirk::disShortestTravPath(int pos1[2], int pos2[])
 	return map[itr[0]->second * systems.size() + itr[1]->second];
 }
 
+int Bezirk::getId(int x, int y)
+{
+	auto t = posToId.find(x + y * dim[0]);
+	if (t != posToId.end())
+		return t->second;
+	else 
+		return - 1;
+}
+
 int Bezirk::getDis(int pos1[2], int pos2[2])
 {
 	return dis(pos1[0] + pos1[1] * dim[0], pos2[0] + pos2[1] * dim[0]);
@@ -73,45 +82,19 @@ void Bezirk::calculateRouts()
 	memset(map, 0, numSystems * numSystems * sizeof(uint8_t));
 	std::map<int, std::shared_ptr<System>>::iterator itr[2];
 	int d;
-	int row = 0;
+	int row;
 	int colum = 0;
 	std::cout << "Size = " << numSystems << std::endl;
-	for(int j = 0; j < dim[1]; ++j)
-		for (int i = 0; i < dim[0]; ++i)
-		{
-			if (this->isSystem(i, j))
-				posToId[i + j * dim[0]] = row++;
-		}
-	for (int j = 0; j < dim[1]; ++j)
-		for (int i = 0; i < dim[0]; ++i)
-		{
-			if (this->isSystem(i, j))
-			{
-				int line = posToId.find(i + j * dim[0])->second;
-				for(int j2 = 0; j2 < dim[1]; ++j2)
-					for (int i2 = 0; i2 < dim[0]; ++i2)
-					{
-						if (i != i2 && j != j2)
-						{
-							if (this->isSystem(i2, j2))
-							{
-								uint8_t d = dis(i + j * dim[0], i2 + j2 * dim[1]);
-								if (d <= 1)
-								{
-									int r = posToId.find(i2 + j2 * dim[0])->second;
-									map[line * numSystems + r] = d;
-								}
-							}
-						}
-					}
-			}
-		}
-	for (int i = 0; i < numSystems * numSystems; ++i)
+	for (row=0, itr[0] = systems.begin(); row < numSystems; ++row, ++itr[0])
 	{
-		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : ' ');
+		posToId[itr[0]->first] = row;
+		for(colum = row + 1, itr[1] = itr[0], ++itr[1]; colum < numSystems; ++colum, ++itr[1])
+			if ((d = dis(itr[0]->first, itr[1]->first)) <= 2)
+			{
+				map[row * numSystems + colum] = d;
+				map[colum * numSystems + row] = d;
+			}
 	}
-	char c;
-	return;
 	bool updated;
 	do {
 		updated = false;
@@ -128,10 +111,10 @@ void Bezirk::calculateRouts()
 				{
 					if ((buff[0] = map[j * numSystems + k]) != 0 && (buff[1] = map[i * numSystems + k]) != 0)
 					{
-						if (node < 0 || (buff[0] += buff[1]) < d)
+						if (node < 0 || (buff[0] + buff[1]) < d)
 						{
 							node = k;
-							d = buff[0];
+							d = buff[0] + buff[1];
 						}
 					}
 				}
@@ -145,10 +128,8 @@ void Bezirk::calculateRouts()
 		}
 	} while (updated);
 	std::cout << "Calculation" << std::endl;
-	std::cin >> c;
 	for (int i = 0; i < numSystems * numSystems; ++i)
-		std::cout << (int)map[i] << (i % numSystems == 0 ? '\n' : ' ');
-	std::cin >> c;
+		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : ' ');
 }
 
 std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)

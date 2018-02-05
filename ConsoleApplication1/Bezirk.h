@@ -13,8 +13,9 @@ public:
 	std::shared_ptr<System> getSystemAt(int x, int y);
 	std::string getSystemCode(std::string systemName);
 	std::string getSystemCode(int x, int y);
-	bool isSystem(int x, int y) { return systems.count(y * dim[1] + x) != 0; }
+	bool isSystem(int x, int y) { return systems.count(y * dim[0] + x) != 0; }
 	int getDis(int pos1[2], int pos2[]);
+	int getId(int x, int y);
 	int disShortestTravPath(int pos1[2], int pos2[]); // 0 = no path
 	void printMapLine(int pos[2]);
 private:
