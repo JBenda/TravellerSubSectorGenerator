@@ -20,6 +20,8 @@ public:
 	void printMapLine(int pos[2]);
 private:
 	void calculateRouts();
+	void calculateTrades();
+	void calculateTradePath();
 	int dis(int pos1, int pos2);
 	std::string generateSystemCode(std::shared_ptr<System> sys, int x, int y);
 	std::map<int,std::shared_ptr<System>> systems;

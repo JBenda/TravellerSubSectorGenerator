@@ -3,8 +3,10 @@ bool isIn(int v, int min, int max)
 {
 	return (min <= v && max >= v);
 }
-System::System()
+System::System(int idNum)
 {
+	id = idNum;
+	trade = std::make_shared<std::vector<std::shared_ptr<System>>>();
 	memset(systemInfo, 0, SYSTEM_INFO::END / 8 + (SYSTEM_INFO::END % 8 > 1 ? 1 : 0));
 	name = "test";
 	if (Dice::role2W6() < 10)	//gas giant
@@ -71,44 +73,65 @@ System::System()
 	else
 		travellerZone = ZONE::NEUTRAL;
 
-	//TRadeCodes
+	//TradeCodes
+	tradeType = TRADE_TYPE::UNIN;
 	if (isIn(atmosphere, 4, 9) && isIn(water, 4, 8) && isIn(population, 5, 7))
-		tradeCode.push_back(Ag);
+		addTradeCode(Ag);
 	if (isIn(atmosphere, 2, 5) && isIn(water, 0, 3))
-		tradeCode.push_back(Ar);
+		addTradeCode(Ar);
 	if (size == 0 && atmosphere == 0 && water == 0)
-		tradeCode.push_back(As);
+		addTradeCode(As);
 	if (population >= 9)
-		tradeCode.push_back(Di);
+		addTradeCode(Di);
 	if (isIn(population, 1, 3))
-		tradeCode.push_back(Due);
+		addTradeCode(Due);
 	if (atmosphere <= 1 && water >= 1)
-		tradeCode.push_back(Ei);
+		addTradeCode(Ei);
 	if(size >= 5 && isIn(atmosphere, 4, 9) && isIn(water, 4, 8))
-		tradeCode.push_back(Ga);
+		addTradeCode(Ga);
 	if(tekkLvl >= 12)
-		tradeCode.push_back(Hi);
+		addTradeCode(Hi);
 	int a;
 	if((((a = atmosphere), a<=2) || a==4 || a==7 || a==9) && population >= 9)
-		tradeCode.push_back(In);
+		addTradeCode(In);
 	if(atmosphere >= 10 && water >= 1)
-		tradeCode.push_back(Li);
+		addTradeCode(Li);
 	if(tekkLvl <= 5)
-		tradeCode.push_back(Lo);
+		addTradeCode(Lo);
 	if(atmosphere <= 3 && water <= 3 && population >= 6)
-		tradeCode.push_back(Na);
+		addTradeCode(Na);
 	if(isIn(population, 4, 6))
-		tradeCode.push_back(Ni);
+		addTradeCode(Ni);
 	if(population == 0 && fraction[0]->getType() == 0 && justize->getJustizLvl((Justize::JUSTIZE_PARTS) 0) == 0)
-		tradeCode.push_back(Oed);
+		addTradeCode(Oed);
 	if ((atmosphere == 6 || atmosphere == 8) && isIn(population, 6, 8))
-		tradeCode.push_back(Re);
+		addTradeCode(Re);
 	if(atmosphere == 0)
-		tradeCode.push_back(Va);
+		addTradeCode(Va);
 	if(water >= 10)
-		tradeCode.push_back(Wa);
+		addTradeCode(Wa);
 	if(atmosphere >= 2 && water == 0)
-		tradeCode.push_back(Wue);
+		addTradeCode(Wue);
+}
+void System::addTradeCode(TRADE_COES tr)
+{
+	tradeCode.push_back(tr);
+	if (tradeType == OMNI)
+		return;
+	if (tr == In || tr == Hi || tr == Di || tr == Re)
+	{
+		if (tradeType == AGRA)
+			tradeType = OMNI;
+		else
+			tradeType = IND;
+	}
+	if (tr == As || tr == Wue || tr == Ei || tr == Ni || tr == Ag || tr == Ga || tr == Wa)
+	{
+		if (tradeType == IND)
+			tradeType = OMNI;
+		else
+			tradeType = AGRA;
+	}
 }
 std::string System::getSystemCode()
 {

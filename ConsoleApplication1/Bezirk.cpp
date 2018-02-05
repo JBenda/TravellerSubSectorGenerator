@@ -10,15 +10,16 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	{
 		if (Dice::roleW6() > 3 - wmP)
 		{
-			systems[i] = std::make_shared<System>();
+			systems[i] = std::make_shared<System>(numSystems);
 			numSystems++;
 		}
 	}
 	std::cout << "Anzal der System " << numSystems << std::endl;
 
 	calculateRouts();
+	calculateTrades();
+	calculateTradePath();
 	//calculate Traderouts
-	// if(d <= 4) && path(<=2) && a e (In, Hi, Di, Re) && b e (As, Wue, Ei, Ni, Agr, Gar, Wa)
 	//calculate Kommunikationsrouts
 	//perhand
 	//set Alianz
@@ -130,6 +131,81 @@ void Bezirk::calculateRouts()
 	std::cout << "Calculation" << std::endl;
 	for (int i = 0; i < numSystems * numSystems; ++i)
 		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : ' ');
+}
+
+void Bezirk::calculateTrades()
+{
+	int i, num = 0, ib;
+	System::TRADE_TYPE tradeType, ttb;
+	for (auto itr = systems.begin(); itr != systems.end(); ++num, ++itr)
+	{
+		tradeType = itr->second->getTradeType();
+		if (tradeType == System::TRADE_TYPE::UNIN)
+			continue;
+		auto subI = itr;
+		for (++subI, i = num + 1; subI != systems.end(); ++subI, ++i)
+		{
+			if ((ib = map[num * systems.size() + i]) > 4 || ib <= 0)
+				continue;
+			if ((ttb = subI->second->getTradeType()) != System::TRADE_TYPE::UNIN)
+			{
+				if (tradeType != ttb)
+				{
+					itr->second->addTradeSystem(subI->second);
+					//andrsrum auch ??
+				}
+			}
+		}
+	}
+}
+
+void Bezirk::calculateTradePath()
+{
+	int num, sub, d, line;
+	int goBack;
+	std::shared_ptr<System> sys;
+	System::TradeList tl;
+	goBack = -1;
+	do {
+		num = 0;
+		for (auto itr = systems.begin(); itr != systems.end(); ++itr, ++num)
+		{
+			if (goBack >= 0 || num < goBack)
+				continue;
+			tl = itr->second->getTradeSystems();
+			std::sort(tl->begin(), tl->end());	//deletDuplicates
+			tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
+			for (int i = 0; i < tl->size(); ++i)
+			{
+				line = systems.size() * num;
+				d = map[line + tl->at(i)->getId()];
+				if (d <= 0)
+				{
+					std::cerr << "ERROR Trade Partner" << std::endl;
+					__debugbreak();
+				}
+				if (d <= 2)	//direct conection
+					continue;
+				sub = 0;
+				d = -1;
+				for (auto itr2 = systems.begin(); itr2 != systems.end(); ++itr2, ++sub)
+					if (map[line + sub] <= 2 && map[line + sub] > 0)
+						if(map[sub * systems.size() + tl->at(i)->getId()] > 0)
+							if (d < 0 || map[sub * systems.size() + tl->at(i)->getId()] < d)
+							{
+								d = map[sub * systems.size() + tl->at(i)->getId()];
+								sys = itr2->second;
+							}
+				sys->addTradeSystem(tl->at(i));
+				(*tl)[i] = sys;
+				if (sys->getId() < num)
+					if (goBack < 0 || sys->getId() < goBack)
+						goBack = sys->getId();
+				std::sort(tl->begin(), tl->end());	//deletDuplicates
+				tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
+			}
+		}
+	} while (goBack >= 0);
 }
 
 std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)
