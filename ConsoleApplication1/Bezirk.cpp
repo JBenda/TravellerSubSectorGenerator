@@ -165,12 +165,18 @@ void Bezirk::calculateTradePath()
 	int goBack;
 	std::shared_ptr<System> sys;
 	System::TradeList tl;
-	goBack = -1;
+	for(int i = 0; i < systems.size() * systems.size(); ++i)
+		if (map[i] > 20)
+		{
+			std::cerr << "Map is broken" << std::endl;
+			__debugbreak();
+		}
 	do {
+		goBack = -1;
 		num = 0;
 		for (auto itr = systems.begin(); itr != systems.end(); ++itr, ++num)
 		{
-			if (goBack >= 0 || num < goBack)
+			if (goBack >= 0 && num < goBack)
 				continue;
 			tl = itr->second->getTradeSystems();
 			std::sort(tl->begin(), tl->end());	//deletDuplicates
@@ -189,13 +195,18 @@ void Bezirk::calculateTradePath()
 				sub = 0;
 				d = -1;
 				for (auto itr2 = systems.begin(); itr2 != systems.end(); ++itr2, ++sub)
-					if (map[line + sub] <= 2 && map[line + sub] > 0)
+					if (map[line + sub] <= 2 && sub != num)
 						if(map[sub * systems.size() + tl->at(i)->getId()] > 0)
 							if (d < 0 || map[sub * systems.size() + tl->at(i)->getId()] < d)
 							{
 								d = map[sub * systems.size() + tl->at(i)->getId()];
 								sys = itr2->second;
 							}
+				if (d < 0 || (int)map[line + sys->getId()] > 2)
+				{
+					std::cerr << "Error d" << std::endl;
+					__debugbreak();
+				}
 				sys->addTradeSystem(tl->at(i));
 				(*tl)[i] = sys;
 				if (sys->getId() < num)
@@ -206,6 +217,44 @@ void Bezirk::calculateTradePath()
 			}
 		}
 	} while (goBack >= 0);
+	num = 0;
+	for (auto itr = systems.begin(); itr != systems.end(); ++itr, ++num)
+	{
+		tl = itr->second->getTradeSystems();
+		std::sort(tl->begin(), tl->end());		//delet Duplicates
+		tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
+		line = systems.size() * num;
+		for (int i = 0; i < tl->size(); ++i)
+		{
+			if (map[line + tl->at(i)->getId()] > 1)
+			{
+				if (map[line + tl->at(i)->getId()] > 2)
+				{
+					if (tl->at(i)->getId() > systems.size())
+						std::cerr << "Straingh" << std::endl;
+					else
+						std::cerr << "too far " << num << "to" << tl->at(i)->getId() << " d= " << (int)map[line + tl->at(i)->getId()] << std::endl;
+				}
+				/*int d = map[line + tl->at(i)->getId()];
+				int posNearst = i;
+				for(int j = 0; j < tl->size(); ++j)
+					if(map[line + tl->at(j)->getId()] < d)
+						if (map[tl->at(j)->getId() * systems.size() + tl->at(i)->getId()] < d)
+						{
+							d = map[line + tl->at(j)->getId()];
+							posNearst = j;
+						}
+				if (posNearst != i)
+				{
+					if (d != 1)
+						std::cerr << "EEE" << std::endl,
+					tl->at(posNearst)->addTradeSystem(tl->at(i));
+					tl->erase(tl->begin() + i);
+				}*/
+			}
+
+		}
+	}
 }
 
 std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)
