@@ -1,7 +1,8 @@
 #pragma once
 
 #include "System.h"
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
+#include <cstring>
 
 #define PI 3.14159265
 

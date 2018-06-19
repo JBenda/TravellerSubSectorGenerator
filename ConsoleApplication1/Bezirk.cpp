@@ -169,7 +169,11 @@ void Bezirk::calculateTradePath()
 		if (map[i] > 20)
 		{
 			std::cerr << "Map is broken" << std::endl;
+                        #ifdef WIN32
 			__debugbreak();
+                        #else
+                        __builtin_trap();
+                        #endif
 		}
 	do {
 		goBack = -1;
@@ -188,7 +192,11 @@ void Bezirk::calculateTradePath()
 				if (d <= 0)
 				{
 					std::cerr << "ERROR Trade Partner" << std::endl;
+                                        #ifdef WIN32
 					__debugbreak();
+                                        #else 
+                                        __builtin_trap();
+                                        #endif
 				}
 				if (d <= 2)	//direct conection
 					continue;
@@ -205,7 +213,11 @@ void Bezirk::calculateTradePath()
 				if (d < 0 || (int)map[line + sys->getId()] > 2)
 				{
 					std::cerr << "Error d" << std::endl;
+                                        #ifdef WIN32
 					__debugbreak();
+                                        #else
+                                        __builtin_trap();
+                                        #endif
 				}
 				sys->addTradeSystem(tl->at(i));
 				(*tl)[i] = sys;
