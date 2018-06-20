@@ -9,7 +9,7 @@
 class System
 {
 public:
-	typedef std::shared_ptr<std::vector<std::shared_ptr<System>>> TradeList;
+	typedef std::vector<std::shared_ptr<System>> TradeList;
 	enum SYSTEM_INFO { SPACE_MARINE, SCOUT, SINCE, TAS, IMPERIUM, PIRATS, GAS_GIANT, END };
 	enum TRADE_COES { Ag, Ar, As, Di, Due, Ei, Ga, Hi, In, Li, Lo, Na, Ni, Oed, Re, Va, Wa, Wue };
 	enum ZONE { NEUTRAL, YELLOW, RED };
@@ -30,8 +30,8 @@ public:
 	void removeTradeCode(TRADE_COES code);
 	void setZone(ZONE zone);
 	int getId() { return id; }
-	void addTradeSystem(std::shared_ptr<System> tradeSys) { trade->push_back(tradeSys); }
-	std::shared_ptr<std::vector<std::shared_ptr<System>>> getTradeSystems() { return trade; }
+	void addTradeSystem(std::shared_ptr<System> tradeSys) { trade.push_back(tradeSys); }
+	const System::TradeList* const  getTradeSystems() const { return &trade; }
 
 private:
 	int id;
@@ -40,7 +40,7 @@ private:
 	ZONE travellerZone;
 	std::vector<std::shared_ptr<Confederation>> confederation;
 	std::vector<std::shared_ptr<System>> communication;
-	std::shared_ptr<std::vector<std::shared_ptr<System>>> trade;
+	TradeList  trade;
 	TRADE_TYPE tradeType;
 	std::vector<TRADE_COES> tradeCode;
 	uint8_t size;			//10

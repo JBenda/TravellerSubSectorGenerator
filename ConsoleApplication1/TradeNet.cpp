@@ -1,16 +1,20 @@
 #include "TradeNet.h"
 
+void TradeNet::setTradeNet(Bezirk* const bez)
+{
+  auto itr = bez->begin();
+  while(itr != bez->end())
+  {
+    std::cout << "System: " << itr->second->getId() << "\n";  
+    ++itr;
+  }
+}
 
-void TradeNet::draw(sf::RenderWindow& window)
+void TradeNet::draw(sf::RenderWindow& window) const
 {
   std::size_t size = _vertex.size();
-  if(_change)
-  {
-    _verBuffer.update(_vertex, size, 0);
-    _change = false;
-  }
   if( size > 0 && size % 2 == 0)
-    window.draw(_verBuffer);  
+    window.draw(&_vertex[0], size, sf::Lines);  
 }
 
 void TradeNet::addRoute(const sf::Vector2f& start, const sf::Vector2f& end)
@@ -23,6 +27,5 @@ void TradeNet::addRoute(const sf::Vector2f& start, const sf::Vector2f& end)
 void TradeNet::clear()
 {
   _change = false;
-  _verBuffer = sf::VertexBuffer();
   _vertex.clear();
 }

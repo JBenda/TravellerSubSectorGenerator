@@ -17,6 +17,7 @@ public:
 			break;
 		case SpacePort::X: tekkLvl -= 4;
 			break;
+                default: break;
 		}
 
 		if (size <= 1)
@@ -49,6 +50,7 @@ public:
 		case 13:
 		case 14: tekkLvl -= 2;
 			break;
+                default: break;
 		}
 
 		if (atmos <= 1 && tekkLvl < 8)
@@ -67,6 +69,7 @@ public:
 			break;
 		case 13: case 14: if (tekkLvl < 5) tekkLvl = 5;
 			break;
+                default: break;
 		}
 		return tekkLvl;
 	}
