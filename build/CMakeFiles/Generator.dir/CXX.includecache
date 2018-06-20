@@ -13,9 +13,9 @@ Bezirk.h
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/Bezirk.h
 System.h
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/System.h
-cstring
--
 SFML/Graphics.hpp
+/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/SFML/Graphics.hpp
+cstring
 -
 
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/Confederation.h
@@ -69,6 +69,8 @@ SpacePort.h
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/SpacePort.h
 TekkLvl.h
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/TekkLvl.h
+cstring
+-
 
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/TekkLvl.h
 SpacePort.h
@@ -87,4 +89,12 @@ Xorshift128.h
 /home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/Xorshift128.h
 stdint.h
 -
+
+/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/main.cpp
+Bezirk.h
+/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/Bezirk.h
+math.h
+-
+SFML/Graphics.hpp
+/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/ConsoleApplication1/SFML/Graphics.hpp
 

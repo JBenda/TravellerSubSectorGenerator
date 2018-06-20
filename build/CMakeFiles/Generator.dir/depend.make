@@ -36,4 +36,16 @@ CMakeFiles/Generator.dir/ConsoleApplication1/System.cpp.o: ../ConsoleApplication
 CMakeFiles/Generator.dir/ConsoleApplication1/Xorshift.cpp.o: ../ConsoleApplication1/Xorshift.cpp
 CMakeFiles/Generator.dir/ConsoleApplication1/Xorshift.cpp.o: ../ConsoleApplication1/Xorshift128.h
 
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Bezirk.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Confederation.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Dice.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Fraction.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Justize.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/SpacePort.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/System.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/TekkLvl.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Tempreture.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Water.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/Xorshift128.h
+CMakeFiles/Generator.dir/ConsoleApplication1/main.cpp.o: ../ConsoleApplication1/main.cpp
 

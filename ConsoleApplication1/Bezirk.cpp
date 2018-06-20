@@ -130,7 +130,7 @@ void Bezirk::calculateRouts()
 	} while (updated);
 	std::cout << "Calculation" << std::endl;
 	for (int i = 0; i < numSystems * numSystems; ++i)
-		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : ' ');
+		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : '\t');
 }
 
 void Bezirk::calculateTrades()
@@ -145,7 +145,7 @@ void Bezirk::calculateTrades()
 		auto subI = itr;
 		for (++subI, i = num + 1; subI != systems.end(); ++subI, ++i)
 		{
-			if ((ib = map[num * systems.size() + i]) > 4 || ib <= 0)
+			if ((ib = map[num * systems.size() + i]) > 4 || ib <= 0) //if systems not connected or to far away
 				continue;
 			if ((ttb = subI->second->getTradeType()) != System::TRADE_TYPE::UNIN)
 			{

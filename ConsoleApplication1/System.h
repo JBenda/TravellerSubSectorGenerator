@@ -5,6 +5,7 @@
 #include "Water.h"
 #include "SpacePort.h"
 #include "TekkLvl.h"
+#include <cstring>
 class System
 {
 public:
