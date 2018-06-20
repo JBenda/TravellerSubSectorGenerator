@@ -130,7 +130,7 @@ void Bezirk::calculateRouts()
 	} while (updated);
 	std::cout << "Calculation" << std::endl;
 	for (int i = 0; i < numSystems * numSystems; ++i)
-		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? '\n' : '\t');
+		std::cout << (int)map[i] << ((i + 1) % numSystems == 0 ? "\n" : (map[i] > 9 ? " " : "  "));
 }
 
 void Bezirk::calculateTrades()
@@ -161,112 +161,6 @@ void Bezirk::calculateTrades()
 
 void Bezirk::calculateTradePath()
 {
-	int num, sub, d, line;
-	int goBack;
-	std::shared_ptr<System> sys;
-	System::TradeList tl;
-	for(int i = 0; i < systems.size() * systems.size(); ++i)
-		if (map[i] > 20)
-		{
-			std::cerr << "Map is broken" << std::endl;
-                        #ifdef WIN32
-			__debugbreak();
-                        #else
-                        __builtin_trap();
-                        #endif
-		}
-	do {
-		goBack = -1;
-		num = 0;
-		for (auto itr = systems.begin(); itr != systems.end(); ++itr, ++num)
-		{
-			if (goBack >= 0 && num < goBack)
-				continue;
-			tl = itr->second->getTradeSystems();
-			std::sort(tl->begin(), tl->end());	//deletDuplicates
-			tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
-			for (int i = 0; i < tl->size(); ++i)
-			{
-				line = systems.size() * num;
-				d = map[line + tl->at(i)->getId()];
-				if (d <= 0)
-				{
-					std::cerr << "ERROR Trade Partner" << std::endl;
-                                        #ifdef WIN32
-					__debugbreak();
-                                        #else 
-                                        __builtin_trap();
-                                        #endif
-				}
-				if (d <= 2)	//direct conection
-					continue;
-				sub = 0;
-				d = -1;
-				for (auto itr2 = systems.begin(); itr2 != systems.end(); ++itr2, ++sub)
-					if (map[line + sub] <= 2 && sub != num)
-						if(map[sub * systems.size() + tl->at(i)->getId()] > 0)
-							if (d < 0 || map[sub * systems.size() + tl->at(i)->getId()] < d)
-							{
-								d = map[sub * systems.size() + tl->at(i)->getId()];
-								sys = itr2->second;
-							}
-				if (d < 0 || (int)map[line + sys->getId()] > 2)
-				{
-					std::cerr << "Error d" << std::endl;
-                                        #ifdef WIN32
-					__debugbreak();
-                                        #else
-                                        __builtin_trap();
-                                        #endif
-				}
-				sys->addTradeSystem(tl->at(i));
-				(*tl)[i] = sys;
-				if (sys->getId() < num)
-					if (goBack < 0 || sys->getId() < goBack)
-						goBack = sys->getId();
-				std::sort(tl->begin(), tl->end());	//deletDuplicates
-				tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
-			}
-		}
-	} while (goBack >= 0);
-	num = 0;
-	for (auto itr = systems.begin(); itr != systems.end(); ++itr, ++num)
-	{
-		tl = itr->second->getTradeSystems();
-		std::sort(tl->begin(), tl->end());		//delet Duplicates
-		tl->erase(std::unique(tl->begin(), tl->end()), tl->end());
-		line = systems.size() * num;
-		for (int i = 0; i < tl->size(); ++i)
-		{
-			if (map[line + tl->at(i)->getId()] > 1)
-			{
-				if (map[line + tl->at(i)->getId()] > 2)
-				{
-					if (tl->at(i)->getId() > systems.size())
-						std::cerr << "Straingh" << std::endl;
-					else
-						std::cerr << "too far " << num << "to" << tl->at(i)->getId() << " d= " << (int)map[line + tl->at(i)->getId()] << std::endl;
-				}
-				/*int d = map[line + tl->at(i)->getId()];
-				int posNearst = i;
-				for(int j = 0; j < tl->size(); ++j)
-					if(map[line + tl->at(j)->getId()] < d)
-						if (map[tl->at(j)->getId() * systems.size() + tl->at(i)->getId()] < d)
-						{
-							d = map[line + tl->at(j)->getId()];
-							posNearst = j;
-						}
-				if (posNearst != i)
-				{
-					if (d != 1)
-						std::cerr << "EEE" << std::endl,
-					tl->at(posNearst)->addTradeSystem(tl->at(i));
-					tl->erase(tl->begin() + i);
-				}*/
-			}
-
-		}
-	}
 }
 
 std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)

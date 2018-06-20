@@ -5,10 +5,10 @@ DOBJ = $(patsubst %.cpp, %.og, $(SRC))
 CXXFLAGS = -std=c++14 -Wall -pedantic
 INCLUDES = 
 prog: $(OBJ)
-	$(CC) -o $@ $(OBJ)
+	$(CC) -o $@ $(OBJ) -lsfml-graphics -lsfml-window -lsfml-system
 
 debug: $(DOBJ)
-	$(CC) -g  -o $@ $(DOBJ)
+	$(CC) -g  -o $@ $(DOBJ) -lsfml-graphics -lsfml-window -lsfml-system
 
 clean: 
 	rm *.o *.og prog debug
@@ -17,4 +17,4 @@ clean:
 	$(CC) $(CXXFLAGS) -g -o $@  -c $<
 
 %.o: %.cpp
-	$(CC) $(CXXFLAGS) -c $<
+	$(CC) $(CXXFLAGS) -c -o $@ $<

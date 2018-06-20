@@ -35,13 +35,17 @@ void drawBezirk(Bezirk *bez, sf::RenderWindow & window)
 	hex.setOutlineThickness(2);
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
+        std::vector<sf::Vertex> tradeLines;
 	int buff;
+        if(bez->getSystemAt(selected[0], selected[1]) != nullptr)
+  	  tl = bez->getSystemAt(selected[0], selected[1])->getTradeSystems();
 	for (int j = 0; j < dim[1]; ++j)
 	{
 		for (int i = 0; i < dim[0]; ++i)
 		{
 			isSys = false;
-			hex.setPosition(topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy)));
+                        sf::Vector2f position = topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
+			hex.setPosition(position);
 			if (bez->isSystem(i, j))
 			{
 				isSys = true;
@@ -54,7 +58,6 @@ void drawBezirk(Bezirk *bez, sf::RenderWindow & window)
 				if (i == selected[0] && j == selected[1])
 				{
 					hex.setFillColor(sf::Color::Blue);
-					tl = bez->getSystemAt(i, j)->getTradeSystems();
 				}
 				else if ((buff = bez->disShortestTravPath(selected, pij)) <= 4 && buff > 0)
 				{
@@ -90,7 +93,7 @@ void drawBezirk(Bezirk *bez, sf::RenderWindow & window)
 				hex.setFillColor(sf::Color::White);
 			window.draw(hex);
 			if(isSys)
-				window.draw(num);
+			  window.draw(num);
 		}
 	}
 }
