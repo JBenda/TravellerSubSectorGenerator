@@ -14,7 +14,7 @@ public:
 	enum TRADE_COES { Ag, Ar, As, Di, Due, Ei, Ga, Hi, In, Li, Lo, Na, Ni, Oed, Re, Va, Wa, Wue };
 	enum ZONE { NEUTRAL, YELLOW, RED };
 	enum TRADE_TYPE { UNIN, AGRA, IND, OMNI };
-	System(int idNum);
+	System(int idNum, int position);
 	TRADE_TYPE getTradeType() { return tradeType; }
 	std::string getName() { return name; }
 	SpacePort::SPACE_PORT_TYPE getSpacePort() { return spacePort; }
@@ -32,9 +32,10 @@ public:
 	int getId() { return id; }
 	void addTradeSystem(std::shared_ptr<System> tradeSys) { trade.push_back(tradeSys); }
 	const System::TradeList* const  getTradeSystems() const { return &trade; }
-
+        int getPosition() const { return pos; } // only can use when you know the map size
 private:
 	int id;
+        int pos;
 	SpacePort::SPACE_PORT_TYPE spacePort;
 	uint8_t systemInfo[SYSTEM_INFO::END / 8 + (SYSTEM_INFO::END % 8 > 1 ? 1 : 0)];	//maske
 	ZONE travellerZone;
@@ -43,11 +44,11 @@ private:
 	TradeList  trade;
 	TRADE_TYPE tradeType;
 	std::vector<TRADE_COES> tradeCode;
-	uint8_t size;			//10
-	uint8_t atmosphere;		//15
-	int8_t temperatur;		//5
-	int8_t water;			//10
-	uint8_t population;		//10
+	uint8_t size;			// max 10
+	uint8_t atmosphere;		// max 15
+	int8_t temperatur;		// max 5
+	int8_t water;			// max 10
+	uint8_t population;		// max 10
 	std::vector<std::shared_ptr<Fraction>> fraction;
 	uint8_t culture[3];
 	std::shared_ptr<Justize> justize;

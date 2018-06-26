@@ -11,7 +11,7 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	{
 		if (Dice::roleW6() > 3 - wmP)
 		{
-			systems[i] = std::make_shared<System>(numSystems);
+			systems[i] = std::make_shared<System>(numSystems, i);
 			numSystems++;
 		}
 	}
@@ -28,7 +28,7 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	//set Bases
 	//perhand
         tradeNet = std::make_unique<TradeNet>(TradeNet());
-        tradeNet->setTradeNet(this);
+        tradeNet->setTradeNet(*this);
 }
 
 void Bezirk::printMapLine(int pos[2]) const
@@ -211,29 +211,35 @@ std::string Bezirk::getSystemCode(int x, int y) const
 	return generateSystemCode(getSystemAt(x, y), x, y);
 }
 
-
+// values from 0, dw, 2dw, 3dw, 4dw, 5dw
+const float cosVal[] = {1.f, 0.5f, -0.5f, -1.f, -0.5f, 0.5f};
+const float sinVal[] = {0.f, 0.866025404f, 0.866025404f, 0.f, -0.866025404f, -0.866025404f};
 
 void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int dy, int dw, int h, int a, sf::Font& font, int* selected, const int* dim) const
 {
+
 	sf::ConvexShape hex(6);
 	sf::Text num;
 	num.setCharacterSize(18);
 	num.setColor(sf::Color::Blue);
 	num.setFont(font);
 	for(int i = 0; i < 6; ++i)
-		hex.setPoint(i, sf::Vector2f(cos((float)i * dw) * a, sin((float)i * dw) * a));
+	  hex.setPoint(i, sf::Vector2f(cosVal[i] * a, sinVal[i] * a));
 	hex.setOutlineColor(sf::Color::Black);
 	hex.setOutlineThickness(1);
 	hex.setFillColor(sf::Color::Green);
+        hex.setPosition(100, 100);
+        window.draw(hex);
 	int pij[2];
-	int sysNum = 0;
+	// int sysNum = 0;
 	char cBuff[20];
 	hex.setOutlineThickness(2);
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
-        std::vector<sf::Vertex> tradeLines;
 	int buff;
         const System::TradeList* const tl = selected[0] >= 0 ? getSystemAt(selected[0], selected[1])->getTradeSystems() : nullptr;
+        if(tradeNet->hasChanged())
+          tradeNet->calculatePos(topLeft, dx, h, dy);
 	for (int j = 0; j < dim[1]; ++j)
 	{
 		for (int i = 0; i < dim[0]; ++i)
@@ -270,16 +276,23 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 				}
 				else
 				{
+                                                // std::cout << "fill color"<< getSystemAt(i, j)->getTradeType() <<  "setted at";
 						switch (getSystemAt(i, j)->getTradeType())
 						{
 						case System::TRADE_TYPE::UNIN :hex.setFillColor(sf::Color::Cyan);
+                                                  // std::cout << "Cyan\n";
 							break;
 						case System::TRADE_TYPE::AGRA: hex.setFillColor(sf::Color::Green);
+                                                  // std::cout << "Green\n";
 							break;
 						case System::TRADE_TYPE::IND: hex.setFillColor(sf::Color(100, 100, 100));
+                                                  // std::cout << "Gray\n";
 							break;
 						case System::TRADE_TYPE::OMNI: hex.setFillColor(sf::Color::Black);
+                                                  // std::cout << "Black\n";
 							break;
+                                                default: hex.setFillColor(sf::Color::Yellow);
+                                                  // std::cout << "Yello valkue\n";
 						}
 				}
 					
@@ -291,5 +304,6 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			  window.draw(num);
 		}
 	}
-        // tradeNet->draw(window);
+        window.draw(hex);
+        tradeNet->draw(window);
 }

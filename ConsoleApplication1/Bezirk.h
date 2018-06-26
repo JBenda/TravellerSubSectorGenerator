@@ -12,6 +12,7 @@ class Bezirk
 {
 public:
 	Bezirk(int x = 8, int y = 10, int wmP = 0);
+        int getWidth() const { return dim[0]; }
 	std::string getName() const { return name; }
 	std::shared_ptr<System> getSystemAt(int x, int y);
         const std::shared_ptr<System> getSystemAt(int x, int y) const;

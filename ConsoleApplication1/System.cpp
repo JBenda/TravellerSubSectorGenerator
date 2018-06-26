@@ -3,10 +3,10 @@ bool isIn(int v, int min, int max)
 {
 	return (min <= v && max >= v);
 }
-System::System(int idNum)
+System::System(int idNum, int position) : trade()
 {
+        pos = position;
 	id = idNum;
-	trade = std::make_shared<std::vector<std::shared_ptr<System>>>();
 	memset(systemInfo, 0, SYSTEM_INFO::END / 8 + (SYSTEM_INFO::END % 8 > 1 ? 1 : 0));
 	name = "test";
 	if (Dice::role2W6() < 10)	//gas giant
