@@ -40,6 +40,10 @@ public:
       end = e.end;
       return *this;
     }
+    Edge reverse()
+    {
+      return Edge(end, start, dis, idEnd, idStart);
+    }
     bool operator==(const Edge& e )
     { return idStart == e.idStart && idEnd == e.idEnd; }
     bool operator<(const Edge& e) /**< schortest Edge dirst */

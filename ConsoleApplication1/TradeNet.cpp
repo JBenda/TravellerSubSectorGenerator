@@ -73,10 +73,17 @@ void TradeNet::stashNet()
     else
     {
       int idStart = prioQueue.front().idStart;
+      int idEnd = prioQueue.front().idEnd;
+      // insert Edge in Both directions
       auto sys = _tradeRouts.find(idStart);
       if(sys == _tradeRouts.end())
         sys = _tradeRouts.insert(std::pair<int, std::vector<Edge>>(idStart, std::vector<Edge>())).first;
       sys->second.push_back(prioQueue.front());
+      sys = _tradeRouts.find(idEnd);
+      if(sys == _tradeRouts.end())
+        sys = _tradeRouts.insert(std::pair<int, std::vector<Edge>>(idEnd, std::vector<Edge>())).first;
+      sys->second.push_back(prioQueue.front().reverse());
+
       node = _adjList.find(prioQueue.front().idEnd);
     }
     bitset[node->first] = 0x0F;
