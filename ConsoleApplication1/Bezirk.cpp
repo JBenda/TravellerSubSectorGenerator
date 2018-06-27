@@ -241,13 +241,15 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
 	int buff;
-        const System::TradeList* const tl = selected[0] >= 0 ? getSystemAt(selected[0], selected[1])->getTradeSystems() : nullptr;
+        // const System::TradeList* const tl = selected[0] >= 0 ? getSystemAt(selected[0], selected[1])->getTradeSystems() : nullptr;
+        void* tl = nullptr;
         if(tradeNet->hasChanged())
           tradeNet->calculatePos(topLeft, dx, h, dy);
 	for (int j = 0; j < dim[1]; ++j)
 	{
 		for (int i = 0; i < dim[0]; ++i)
 		{
+                        hex.setFillColor(sf::Color::White);
 			isSys = false;
                         sf::Vector2f position = topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
 			hex.setPosition(position);
@@ -264,21 +266,17 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 				{
 					hex.setFillColor(sf::Color::Blue);
 				}
-				else if ((buff = disShortestTravPath(selected, pij)) <= 4 && buff > 0)
-				{
-					hex.setFillColor(sf::Color::Magenta);
-					int id = getSystemAt(i, j)->getId();
-					if (tl != nullptr)
-					{
-						for (std::size_t k = 0; k < tl->size(); ++k)
-							if (tl->at(k)->getId() == id)
-							{
-								hex.setFillColor(sf::Color::Red);
-								break;
-							}
-					}
-				}
-				else
+				else if (tl != nullptr)
+                                {
+                                  int id = getSystemAt(i, j)->getId();
+                                  /*for (std::size_t k = 0; k < tl->size(); ++k)
+                                    if (tl->at(k)->getId() == id)
+                                    {
+                                      hex.setFillColor(sf::Color::Red);
+                                      break;
+                                    }*/
+                                }
+				if(hex.getFillColor() == sf::Color::White)
 				{
                                                 // std::cout << "fill color"<< getSystemAt(i, j)->getTradeType() <<  "setted at";
 						switch (getSystemAt(i, j)->getTradeType())
