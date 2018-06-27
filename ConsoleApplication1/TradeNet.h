@@ -62,6 +62,7 @@ public:
   bool hasChanged() const { return _change; }
   void calculatePos(const sf::Vector2f& topLeft, int dx, int h, int dy);
   void stashNet();
+  bool isInNet(int id) const { return _tradeRouts.find(id) != _tradeRouts.end(); };
 private:
   const Bezirk* _pBezirk;
   bool _change;

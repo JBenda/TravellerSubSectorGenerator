@@ -223,6 +223,8 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 {
 
 	sf::ConvexShape hex(6);
+        sf::CircleShape cicle(10.f);
+        cicle.setFillColor(sf::Color::Red);
 	sf::Text num;
 	num.setCharacterSize(18);
 	num.setColor(sf::Color::Blue);
@@ -241,8 +243,9 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
 	int buff;
-        // const System::TradeList* const tl = selected[0] >= 0 ? getSystemAt(selected[0], selected[1])->getTradeSystems() : nullptr;
-        void* tl = nullptr;
+        const std::shared_ptr<System> selectedSys = getSystemAt(selected[0], selected[1]); 
+        const System::TradeList* const tl = selectedSys == nullptr ? nullptr : selectedSys->getTradeSystems();
+        // void* tl = nullptr;
         if(tradeNet->hasChanged())
           tradeNet->calculatePos(topLeft, dx, h, dy);
 	for (int j = 0; j < dim[1]; ++j)
@@ -253,6 +256,7 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			isSys = false;
                         sf::Vector2f position = topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
 			hex.setPosition(position);
+                        cicle.setPosition(position);
 			if (isSystem(i, j))
 			{
 				isSys = true;
@@ -262,6 +266,8 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 								hex.getPosition().y - num.getGlobalBounds().height * 0.5f);
 				pij[0] = i;
 				pij[1] = j;
+
+                                
 				if (i == selected[0] && j == selected[1])
 				{
 					hex.setFillColor(sf::Color::Blue);
@@ -269,12 +275,12 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 				else if (tl != nullptr)
                                 {
                                   int id = getSystemAt(i, j)->getId();
-                                  /*for (std::size_t k = 0; k < tl->size(); ++k)
+                                  for (std::size_t k = 0; k < tl->size(); ++k)
                                     if (tl->at(k)->getId() == id)
                                     {
                                       hex.setFillColor(sf::Color::Red);
                                       break;
-                                    }*/
+                                    }
                                 }
 				if(hex.getFillColor() == sf::Color::White)
 				{
@@ -304,6 +310,8 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			window.draw(hex);
 			if(isSys)
 			  window.draw(num);
+                        if(tradeNet->isInNet(getId(i, j)))
+                          window.draw(cicle);
 		}
 	}
         window.draw(hex);
