@@ -72,8 +72,11 @@ void TradeNet::stashNet()
     }
     else
     {
-      _positions.push_back(prioQueue.front().start);
-      _positions.push_back(prioQueue.front().end);
+      int idStart = prioQueue.front().idStart;
+      auto sys = _tradeRouts.find(idStart);
+      if(sys == _tradeRouts.end())
+        sys = _tradeRouts.insert(std::pair<int, std::vector<Edge>>(idStart, std::vector<Edge>())).first;
+      sys->second.push_back(prioQueue.front());
       node = _adjList.find(prioQueue.front().idEnd);
     }
     bitset[node->first] = 0x0F;
@@ -100,15 +103,22 @@ void TradeNet::calculatePos(const sf::Vector2f& topLeft, int dx, int h, int dy)
 {
   std::cout << "VertexLength: " << _vertex.size() << "\n";
   assert(_vertex.empty());
-  auto itrP = _positions.begin();
   int x, y;
   int width = _pBezirk->getWidth();
-  while( itrP != _positions.end() )
+  for( auto node : _tradeRouts )
   {
-    x = *itrP % width;
-    y = *itrP / width;
-    _vertex.push_back(sf::Vertex(topLeft + sf::Vector2f(x * dx, y * 2.f * h + (x % 2 == 0 ? 0.f : dy)), _color ));
-    ++itrP;
+    x = node.second.front().start % width;
+    y = node.second.front().start / width;
+    sf::Vertex startV(topLeft + sf::Vector2f(x * dx, y * 2.f * h + (x % 2 == 0 ? 0.f : dy)), _color );
+    for(auto e : node.second)
+    {
+      if(e.idStart >= e.idEnd) // only draw one direction
+        continue;
+      _vertex.push_back(startV);
+      x = e.end % width;
+      y = e.end / width;
+      _vertex.push_back(sf::Vertex(topLeft + sf::Vector2f(x * dx, y * 2.f * h + (x % 2 == 0 ? 0.f : dy)), _color ));
+    }
   }
 
   _change = false;
@@ -119,5 +129,5 @@ void TradeNet::clear()
   _change = false;
   _vertex.clear();
   _adjList.clear();
-  _positions.clear();
+  _tradeRouts.clear();
 }

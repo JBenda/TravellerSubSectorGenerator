@@ -62,7 +62,7 @@ private:
   const Bezirk* _pBezirk;
   bool _change;
   std::vector<sf::Vertex> _vertex;
-  std::vector<int> _positions;
+  std::map<int, std::vector<Edge>> _tradeRouts; /**< trade routs saved in an adjzentz List */
   std::map<int, std::vector<Edge>> _adjList;
   const sf::Color _color;
 };
