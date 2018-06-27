@@ -1,5 +1,6 @@
 #include "Bezirk.h"
 #include <math.h>
+#include "TradeNet.h"
 
 Bezirk::Bezirk(int x, int y, int wmP) 
 {
@@ -28,7 +29,8 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	//set Bases
 	//perhand
         tradeNet = std::make_unique<TradeNet>(TradeNet());
-        tradeNet->setTradeNet(*this);
+        tradeNet->setTradeNet(this);
+        tradeNet->stashNet();
 }
 
 void Bezirk::printMapLine(int pos[2]) const
@@ -61,19 +63,20 @@ int Bezirk::getId(int x, int y) const
 	else 
 		return - 1;
 }
-
-int Bezirk::getDis(int pos1[2], int pos2[2]) const
+int Bezirk::getDis(int pos1, int pos2) const
 {
-	return dis(pos1[0] + pos1[1] * dim[0], pos2[0] + pos2[1] * dim[0]);
+  int p[4] = { pos1 % dim[0], pos1 / dim[0], pos2 % dim[0], pos2 / dim[0]};
+  return dis(p, p + 2);
+}
+int Bezirk::getDis(int pos1[2], int pos2[2])
+{
+  return dis(pos1, pos2);
 }
 
-int Bezirk::dis(int pos1, int pos2) const	//Manhatten distance
+int Bezirk::dis(int* const p1, int* const p2)	//Manhatten distance
 {
-	sf::Vector2i p1, p2;
-	p1 = { pos1 % dim[0], pos1 / dim[0] };
-	p2 = { pos2 % dim[0], pos2 / dim[0] };
-	int x[] = { p1.x, p2.x };
-	int z[] = { p1.y - (int)(p1.x / 2), p2.y - (int)(p2.x / 2) };
+	int x[] = { p1[0], p2[0] };
+	int z[] = { p1[1] - (int)(p1[0] / 2), p2[1] - (int)(p2[0] / 2) };
 	int y[] = { -x[0] - z[0], -x[1] - z[1] };
 	return std::max(std::abs(x[0]-x[1]), std::max(std::abs(y[0]-y[1]), std::abs(z[0]-z[1])));
 }
@@ -93,7 +96,7 @@ void Bezirk::calculateRouts()
 	{
 		posToId[itr[0]->first] = row;
 		for(colum = row + 1, itr[1] = itr[0], ++itr[1]; colum < numSystems; ++colum, ++itr[1])
-			if ((d = dis(itr[0]->first, itr[1]->first)) <= 2)
+			if ((d = getDis(itr[0]->first, itr[1]->first)) <= 2)
 			{
 				map[row * numSystems + colum] = d;
 				map[colum * numSystems + row] = d;
@@ -155,6 +158,7 @@ void Bezirk::calculateTrades()
 				if (tradeType != ttb)
 				{
 					itr->second->addTradeSystem(subI->second);
+                                        subI->second->addTradeSystem(itr->second);
 					//andrsrum auch ??
 				}
 			}
