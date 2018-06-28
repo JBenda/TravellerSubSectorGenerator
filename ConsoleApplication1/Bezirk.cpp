@@ -223,8 +223,6 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 {
 
 	sf::ConvexShape hex(6);
-        sf::CircleShape cicle(10.f);
-        cicle.setFillColor(sf::Color::Red);
 	sf::Text num;
 	num.setCharacterSize(18);
 	num.setColor(sf::Color::Blue);
@@ -256,7 +254,6 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			isSys = false;
                         sf::Vector2f position = topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
 			hex.setPosition(position);
-                        cicle.setPosition(position);
 			if (isSystem(i, j))
 			{
 				isSys = true;
@@ -310,8 +307,6 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			window.draw(hex);
 			if(isSys)
 			  window.draw(num);
-                        if(tradeNet->isInNet(getId(i, j)))
-                          window.draw(cicle);
 		}
 	}
         window.draw(hex);
