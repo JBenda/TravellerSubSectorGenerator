@@ -225,7 +225,7 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	sf::ConvexShape hex(6);
 	sf::Text num;
 	num.setCharacterSize(18);
-	num.setColor(sf::Color::Blue);
+	num.setFillColor(sf::Color::Blue);
 	num.setFont(font);
 	for(int i = 0; i < 6; ++i)
 	  hex.setPoint(i, sf::Vector2f(cosVal[i] * a, sinVal[i] * a));
@@ -240,10 +240,8 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	hex.setOutlineThickness(2);
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
-	int buff;
         const std::shared_ptr<System> selectedSys = getSystemAt(selected[0], selected[1]); 
         const System::TradeList* const tl = selectedSys == nullptr ? nullptr : selectedSys->getTradeSystems();
-        // void* tl = nullptr;
         if(tradeNet->hasChanged())
           tradeNet->calculatePos(topLeft, dx, h, dy);
 	for (int j = 0; j < dim[1]; ++j)
@@ -252,12 +250,12 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 		{
                         hex.setFillColor(sf::Color::White);
 			isSys = false;
-                        sf::Vector2f position = topLeft + sf::Vector2f(i * dx, j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
+                        sf::Vector2f position = topLeft + sf::Vector2f(static_cast<float>(i * dx), j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
 			hex.setPosition(position);
 			if (isSystem(i, j))
 			{
 				isSys = true;
-                                sprintf(cBuff, "%i", getId(i, j));
+                                sprintf_s(cBuff, "%i", getId(i, j));
 				num.setString(cBuff);
 				num.setPosition(hex.getPosition().x - num.getGlobalBounds().width * 0.5f,
 								hex.getPosition().y - num.getGlobalBounds().height * 0.5f);
