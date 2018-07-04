@@ -21,7 +21,7 @@ public:
 	bool isBase(SYSTEM_INFO base) { return (systemInfo[base / 8] & (0x80 >> base % 8)); }
 	bool isGaseGiant() { return (systemInfo[GAS_GIANT / 8] & (0x80 >> GAS_GIANT % 8)); }
 	ZONE getZone() { return travellerZone; }
-	std::string getSystemCode();
+	std::string getSystemCode() const;
 	void setName(std::string newName);
 	void setSystemInfo(SYSTEM_INFO type, bool value);
 	void addBase(SpacePort::SPACE_PORT_TYPE base);
@@ -29,7 +29,7 @@ public:
 	void addTradeCode(TRADE_COES tr);
 	void removeTradeCode(TRADE_COES code);
 	void setZone(ZONE zone);
-	int getId() { return id; }
+	int getId() const { return id; }
 	void addTradeSystem(std::shared_ptr<System> tradeSys) { trade.push_back(tradeSys); }
 	const System::TradeList* const  getTradeSystems() const { return &trade; }
         int getPosition() const { return pos; } // only can use when you know the map size

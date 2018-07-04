@@ -133,7 +133,7 @@ void System::addTradeCode(TRADE_COES tr)
 			tradeType = AGRA;
 	}
 }
-std::string System::getSystemCode()
+std::string System::getSystemCode() const
 {
 	std::stringstream str;
 	str << "Not worked yet";

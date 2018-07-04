@@ -2,7 +2,7 @@ CC = g++
 SRC =  $(wildcard ../ConsoleApplication1/*.cpp)
 OBJ = $(patsubst %.cpp, %.o, $(SRC))
 DOBJ = $(patsubst %.cpp, %.og, $(SRC))
-CXXFLAGS = -std=c++14 -Wall -pedantic
+CXXFLAGS = -std=c++17 -Wall -pedantic
 SFMLLIBS = -lsfml-graphics -lsfml-window -lsfml-system
 INCLUDES = 
 prog: $(OBJ)

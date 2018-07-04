@@ -234,7 +234,7 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	hex.setFillColor(sf::Color::Green);
         hex.setPosition(100, 100);
         window.draw(hex);
-	int pij[2];
+	// int pij[2];
 	// int sysNum = 0;
 	char cBuff[20];
 	hex.setOutlineThickness(2);
@@ -255,12 +255,16 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			if (isSystem(i, j))
 			{
 				isSys = true;
-                                sprintf_s(cBuff, "%i", getId(i, j));
+                                #ifdef __unix__
+                                  sprintf(cBuff, "%i", getId(i, j));
+                                #else
+                                  sprintf_s(cBuff, "%i", getId(i, j));
+                                #endif
 				num.setString(cBuff);
 				num.setPosition(hex.getPosition().x - num.getGlobalBounds().width * 0.5f,
 								hex.getPosition().y - num.getGlobalBounds().height * 0.5f);
-				pij[0] = i;
-				pij[1] = j;
+				// pij[0] = i;
+				// pij[1] = j;
 
                                 
 				if (i == selected[0] && j == selected[1])

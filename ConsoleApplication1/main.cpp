@@ -1,6 +1,7 @@
 ﻿// ConsoleApplication1.cpp : Defines the entry point for the console application.
 //
 #include "Bezirk.h"
+#include "DetailScreen.h"
 #include "SFML/Graphics.hpp"
 #include <math.h>
 
@@ -24,19 +25,24 @@ sf::Vector2i posToPx(sf::Vector2i corner, int pos[2])
 }
 int main()
 {
-	bool ifChange = true;
 	const uint32_t v[] = { 0xa56301b9, 0x0dc5caae, 0xeff2fa51 };
 	Xorshift128::instance()->setValues(v[0], v[1], v[2]);
 	Bezirk *bezirk;
 	bezirk = new Bezirk(dim[0], dim[1],0);
 
 	loadStuff();
-	sf::RenderWindow window(sf::VideoMode(a + (int)(dim[0]*dx), (int)(2 * dim[1] + 1) * h), "SFML works!");
+	sf::RenderWindow window(sf::VideoMode(a + static_cast<int>(dim[0]*dx) * 2, static_cast<int>(2 * dim[1] + 1) * h), "SFML works!");
 	sf::Image im;
 	sf::Texture lastScreen;
 	lastScreen.create(window.getSize().x, window.getSize().y);
-	sf::Sprite sp;
-	window.setFramerateLimit(60);
+	// sf::Sprite sp;
+        DetailScreen detailScreen(
+          font, 
+          sf::Vector2f(dim[0]*dx + dx, 0), 
+          sf::Vector2f(dim[0]*dx - dx, (2*dim[1] + 1)*h),
+          "."
+        );
+	window.setFramerateLimit(10);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -83,10 +89,18 @@ int main()
 					}
 
 				}
+                                if(std::shared_ptr<System> sys; 
+                                  (sys = 
+                                    bezirk->getSystemAt(
+                                      selected[0], 
+                                      selected[1]
+                                    )) != nullptr)
+                                  detailScreen.setSystem(*sys);
 			}
 		}
 			window.clear();
                         bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected, dim);
+                        detailScreen.draw(window);
 			window.display();
 	}
 	return 0;

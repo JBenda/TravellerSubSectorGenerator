@@ -11,6 +11,7 @@ class TradeNet;
 class Bezirk
 {
 public:
+        enum ICONS {PIRATE_BASE, RFA, SCOUT_BASE, MARINE_BASE};
 	Bezirk(int x = 8, int y = 10, int wmP = 0);
         int getWidth() const { return dim[0]; }
 	std::string getName() const { return name; }
@@ -40,4 +41,5 @@ private:
 	int dim[2];
 	uint8_t *map;
         std::unique_ptr<TradeNet> tradeNet;
+        std::vector<sf::Image> _icons;
 };
