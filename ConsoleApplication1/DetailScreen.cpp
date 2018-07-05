@@ -6,7 +6,6 @@ void DetailScreen::setSystem(const System& sys)
   if(sys.getId() == _systemId)
     return;
   _des = _parser.parse(sys);
-  std::cout << "Check\n";
   _planetPic.setTexture(&_des.texPlanet);
   std::size_t i = 0;
   bool res = _des.states.size() != _states.size();
