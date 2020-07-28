@@ -5,12 +5,16 @@
 #include "SFML/Graphics.hpp"
 #include <math.h>
 
-const int dim[] = { 8, 10 };
-const float a = 40;			//size of hex edge
-const float h = a * (float)sqrt(3) / 2.f;
-const float dw = PI / 3.f;
-const float dx = 1.5f * a;
-const float dy = h;
+constexpr std::array<int, 2> dim = { 8, 10 };
+constexpr float a = 40;			//size of hex edge
+constexpr float h = a * (float)sqrt(3) / 2.f;
+constexpr float dw = PI / 3.f;
+constexpr float dx = 1.5f * a;
+constexpr float dy = h;
+constexpr std::array<float, 2> N_UP_RIGHT = {0.8660254037844387f, -0.5f};
+constexpr std::array<float, 2> N_DOWN_RIGHT = {0.8660254037844387f, 0.5f};
+constexpr std::array<float, 2> N_UP_LEFT = {-0.8660254037844387f, -0.5f};
+constexpr std::array<float, 2> N_DOWN_LEFT = {-0.8660254037844387f, 0.5f};
 int selected[] = { -1, -1 };
 sf::Vector2f topLeft(a,h);
 sf::Font font;
@@ -36,12 +40,12 @@ int main()
 	sf::Texture lastScreen;
 	lastScreen.create(window.getSize().x, window.getSize().y);
 	// sf::Sprite sp;
-        DetailScreen detailScreen(
-          font, 
-          sf::Vector2f(dim[0]*dx + dx, 0), 
-          sf::Vector2f(dim[0]*dx - dx, (2*dim[1] + 1)*h),
-          "."
-        );
+    DetailScreen detailScreen(
+      font,
+      sf::Vector2f(dim[0]*dx + dx, 0),
+      sf::Vector2f(dim[0]*dx - dx, (2*dim[1] + 1)*h),
+      "."
+    );
 	window.setFramerateLimit(10);
 	while (window.isOpen())
 	{
@@ -52,56 +56,68 @@ int main()
 				window.close();
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				sf::Vector2i pos = sf::Mouse::getPosition(window);
-				pos.x -= (int)topLeft.x;
-				pos.y -= (int)topLeft.y;
-				selected[0] = (int)(pos.x / dx);
-				selected[1] = (int)(pos.y / (2 * dy));
-				sf::Vector2i d = posToPx(pos, selected);
-				int dV = d.x*d.x + d.y*d.y;
-				selected[0] ++;
-				d = posToPx(pos, selected);
-				if (dV < d.x*d.x + d.y*d.y)
-					selected[0] -= 1;
-				else
-					dV = d.x*d.x + d.y*d.y;
-				if (selected[0] % 2 == 0)
-				{
-					selected[1] ++;
-					d = posToPx(pos, selected);
-					if (dV < d.x*d.x + d.y*d.y)
-						selected[1] --;
-				}
-				else
-				{
-					selected[1] ++;
-					selected[0] --;
-					d = posToPx(pos, selected);
-					if (dV < d.x*d.x + d.y*d.y)
-					{
-						selected[0] += 2;
-						d = posToPx(pos, selected);
-						if (dV < d.x*d.x + d.y*d.y)
-						{
-							selected[0] --;
-							selected[1] --;
-						}
-					}
+				sf::Vector2i pxpos(sf::Mouse::getPosition(window));
+                sf::Vector2f pos = window.mapPixelToCoords(pxpos);
+				pos.x -= topLeft.x;
+				pos.y -= topLeft.y;
+                std::cout << "click: " << pos.x << ", " << pos.y << std::endl;
+                const int x = static_cast<int>(pos.x / a);
+                selected[0] = (2*x) / 3;
 
-				}
-                                if(std::shared_ptr<System> sys; 
-                                  (sys = 
-                                    bezirk->getSystemAt(
-                                      selected[0], 
-                                      selected[1]
-                                    )) != nullptr)
-                                  detailScreen.setSystem(*sys);
+                // right/left side
+                const int place = x % 3;
+                std::cout << "x " << x << ", " << place;
+                if(place == 0 || place == 2) {
+                  selected[1] = static_cast<int>((pos.y + h)/ (2.f*h));
+
+
+                  sf::Vector2f center(x*a, selected[1]*2.f*h);
+                  if (place == 0) {
+                    center.x += a;
+                  } else {
+                    selected[0] += 1;
+                  }
+                  pos -= center;
+                  if (place == 0 && pos.y < 0) {
+                    if ( pos.x * N_UP_RIGHT[0] + pos.y * N_UP_RIGHT[1] > 0) {
+                      selected[0] += 1;
+                      selected[1] -= 1;
+                    }
+                  } else if (place == 0){
+                    if (pos.x * N_DOWN_RIGHT[0] + pos.y * N_DOWN_RIGHT[1] > 0) {
+                      selected[0] += 1;
+                    }
+                  } else if (pos.y < 0) {
+                    if (pos.x * N_UP_LEFT[0] + pos.y * N_UP_LEFT[1] > 0) {
+                      selected[0] -= 1;
+                      selected[1] -= 1;
+                    }
+                  } else {
+                    if ( pos.x * N_DOWN_LEFT[0] + pos.y * N_DOWN_LEFT[1] > 0) {
+                      selected[0] -= 1;
+                    }
+                  }
+                }
+                // corridor case
+                else  {
+                  selected[0] += 1;
+                  selected[1] = static_cast<int>(pos.y / (2.f*h));
+                }
+
+                if(std::shared_ptr<System> sys;
+                  (sys =
+                    bezirk->getSystemAt(
+                      selected[0],
+                      selected[1]
+                    )) != nullptr) {
+                  detailScreen.setSystem(*sys);
+                }
 			}
 		}
-			window.clear();
-                        bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected, dim);
-                        detailScreen.draw(window);
-			window.display();
+        window.clear();
+        bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected, dim.data());
+        detailScreen.draw(window);
+        window.display();
 	}
 	return 0;
 }
