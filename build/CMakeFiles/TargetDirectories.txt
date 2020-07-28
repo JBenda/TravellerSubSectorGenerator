@@ -1,3 +1,0 @@
-/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/build/CMakeFiles/edit_cache.dir
-/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/build/CMakeFiles/Generator.dir
-/home/gunpla/Documents/Projects/TravellerSubSectorGenerator/build/CMakeFiles/rebuild_cache.dir
