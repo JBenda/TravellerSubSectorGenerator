@@ -15,7 +15,7 @@ constexpr std::array<float, 2> N_UP_RIGHT = {0.8660254037844387f, -0.5f};
 constexpr std::array<float, 2> N_DOWN_RIGHT = {0.8660254037844387f, 0.5f};
 constexpr std::array<float, 2> N_UP_LEFT = {-0.8660254037844387f, -0.5f};
 constexpr std::array<float, 2> N_DOWN_LEFT = {-0.8660254037844387f, 0.5f};
-int selected[] = { -1, -1 };
+std::array<int, 2> selected = { -1, -1 };
 sf::Vector2f topLeft(a,h);
 sf::Font font;
 
@@ -23,10 +23,59 @@ void loadStuff()
 {
 	font.loadFromFile("ariblk.ttf");
 }
-sf::Vector2i posToPx(sf::Vector2i corner, int pos[2])
-{
-	return sf::Vector2i(corner.x - (int)(pos[0] * dx), corner.y - (int)(pos[1] * 2 * dy) - (pos[0] % 2 == 0 ? 0 : (int)dy));
+
+std::array<int, 2> taileUnderMouse(const sf::Vector2f& topLeft, const sf::RenderWindow& window) {
+    sf::Vector2i pxpos(sf::Mouse::getPosition(window));
+    sf::Vector2f pos = window.mapPixelToCoords(pxpos);
+    pos.x -= topLeft.x;
+    pos.y -= topLeft.y;
+    std::cout << "click: " << pos.x << ", " << pos.y << std::endl;
+    const int x = static_cast<int>(pos.x / a);
+    std::array<int, 2> res = {-1, -1};
+    res[0] = (2*x) / 3;
+
+    // right/left side
+    const int place = x % 3;
+    std::cout << "x " << x << ", " << place;
+    if(place == 0 || place == 2) {
+      res[1] = static_cast<int>((pos.y + h)/ (2.f*h));
+
+
+      sf::Vector2f center(x*a, res[1]*2.f*h);
+      if (place == 0) {
+        center.x += a;
+      } else {
+        res[0] += 1;
+      }
+      pos -= center;
+      if (place == 0 && pos.y < 0) {
+        if ( pos.x * N_UP_RIGHT[0] + pos.y * N_UP_RIGHT[1] > 0) {
+          res[0] += 1;
+          res[1] -= 1;
+        }
+      } else if (place == 0){
+        if (pos.x * N_DOWN_RIGHT[0] + pos.y * N_DOWN_RIGHT[1] > 0) {
+          res[0] += 1;
+        }
+      } else if (pos.y < 0) {
+        if (pos.x * N_UP_LEFT[0] + pos.y * N_UP_LEFT[1] > 0) {
+          res[0] -= 1;
+          res[1] -= 1;
+        }
+      } else {
+        if ( pos.x * N_DOWN_LEFT[0] + pos.y * N_DOWN_LEFT[1] > 0) {
+          res[0] -= 1;
+        }
+      }
+    }
+    // corridor case
+    else  {
+      res[0] += 1;
+      res[1] = static_cast<int>(pos.y / (2.f*h));
+    }
+    return res;
 }
+
 int main()
 {
 	const uint32_t v[] = { 0xa56301b9, 0x0dc5caae, 0xeff2fa51 };
@@ -56,53 +105,7 @@ int main()
 				window.close();
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				sf::Vector2i pxpos(sf::Mouse::getPosition(window));
-                sf::Vector2f pos = window.mapPixelToCoords(pxpos);
-				pos.x -= topLeft.x;
-				pos.y -= topLeft.y;
-                std::cout << "click: " << pos.x << ", " << pos.y << std::endl;
-                const int x = static_cast<int>(pos.x / a);
-                selected[0] = (2*x) / 3;
-
-                // right/left side
-                const int place = x % 3;
-                std::cout << "x " << x << ", " << place;
-                if(place == 0 || place == 2) {
-                  selected[1] = static_cast<int>((pos.y + h)/ (2.f*h));
-
-
-                  sf::Vector2f center(x*a, selected[1]*2.f*h);
-                  if (place == 0) {
-                    center.x += a;
-                  } else {
-                    selected[0] += 1;
-                  }
-                  pos -= center;
-                  if (place == 0 && pos.y < 0) {
-                    if ( pos.x * N_UP_RIGHT[0] + pos.y * N_UP_RIGHT[1] > 0) {
-                      selected[0] += 1;
-                      selected[1] -= 1;
-                    }
-                  } else if (place == 0){
-                    if (pos.x * N_DOWN_RIGHT[0] + pos.y * N_DOWN_RIGHT[1] > 0) {
-                      selected[0] += 1;
-                    }
-                  } else if (pos.y < 0) {
-                    if (pos.x * N_UP_LEFT[0] + pos.y * N_UP_LEFT[1] > 0) {
-                      selected[0] -= 1;
-                      selected[1] -= 1;
-                    }
-                  } else {
-                    if ( pos.x * N_DOWN_LEFT[0] + pos.y * N_DOWN_LEFT[1] > 0) {
-                      selected[0] -= 1;
-                    }
-                  }
-                }
-                // corridor case
-                else  {
-                  selected[0] += 1;
-                  selected[1] = static_cast<int>(pos.y / (2.f*h));
-                }
+                selected = taileUnderMouse(topLeft, window);
 
                 if(std::shared_ptr<System> sys;
                   (sys =
@@ -115,7 +118,7 @@ int main()
 			}
 		}
         window.clear();
-        bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected, dim.data());
+        bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected.data(), dim.data());
         detailScreen.draw(window);
         window.display();
 	}
