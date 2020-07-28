@@ -5,12 +5,16 @@
 #include "Water.h"
 #include "SpacePort.h"
 #include "TekkLvl.h"
+
 #include <cstring>
+#include <vector>
+#include <memory>
+
 class System
 {
 public:
 	typedef std::vector<std::shared_ptr<System>> TradeList;
-	enum SYSTEM_INFO { SPACE_MARINE, SCOUT, SINCE, TAS, IMPERIUM, PIRATS, GAS_GIANT, END };
+	enum SYSTEM_INFO { SPACE_MARINE, SCOUT, SINCE, TAS, IMPERIUM, PIRATES, GAS_GIANT, END };
 	enum TRADE_COES { Ag, Ar, As, Di, Due, Ei, Ga, Hi, In, Li, Lo, Na, Ni, Oed, Re, Va, Wa, Wue };
 	enum ZONE { NEUTRAL, YELLOW, RED };
 	enum TRADE_TYPE { UNIN, AGRA, IND, OMNI };

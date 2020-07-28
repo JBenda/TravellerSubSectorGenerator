@@ -1,6 +1,8 @@
 #include "Bezirk.h"
-#include <math.h>
 #include "TradeNet.h"
+
+#include <math.h>
+#include <string>
 
 Bezirk::Bezirk(int x, int y, int wmP) 
 {
@@ -250,37 +252,31 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 		{
                         hex.setFillColor(sf::Color::White);
 			isSys = false;
-                        sf::Vector2f position = topLeft + sf::Vector2f(static_cast<float>(i * dx), j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
+            sf::Vector2f position = topLeft + sf::Vector2f(static_cast<float>(i * dx), j * 2.f * h + (i % 2 == 0 ? 0.f : dy));
 			hex.setPosition(position);
 			if (isSystem(i, j))
 			{
 				isSys = true;
-                                #ifdef __unix__
-                                  sprintf(cBuff, "%i", getId(i, j));
-                                #else
-                                  sprintf_s(cBuff, "%i", getId(i, j));
-                                #endif
-				num.setString(cBuff);
+				num.setString(std::to_string(getId(i,j)));
 				num.setPosition(hex.getPosition().x - num.getGlobalBounds().width * 0.5f,
 								hex.getPosition().y - num.getGlobalBounds().height * 0.5f);
 				// pij[0] = i;
 				// pij[1] = j;
 
-                                
 				if (i == selected[0] && j == selected[1])
 				{
 					hex.setFillColor(sf::Color::Blue);
 				}
 				else if (tl != nullptr)
-                                {
-                                  int id = getSystemAt(i, j)->getId();
-                                  for (std::size_t k = 0; k < tl->size(); ++k)
-                                    if (tl->at(k)->getId() == id)
-                                    {
-                                      hex.setFillColor(sf::Color::Red);
-                                      break;
-                                    }
-                                }
+                {
+                  int id = getSystemAt(i, j)->getId();
+                  for (std::size_t k = 0; k < tl->size(); ++k)
+                    if (tl->at(k)->getId() == id)
+                    {
+                      hex.setFillColor(sf::Color::Red);
+                      break;
+                    }
+                }
 				if(hex.getFillColor() == sf::Color::White)
 				{
                                                 // std::cout << "fill color"<< getSystemAt(i, j)->getTradeType() <<  "setted at";
@@ -298,7 +294,7 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 						case System::TRADE_TYPE::OMNI: hex.setFillColor(sf::Color::Black);
                                                   // std::cout << "Black\n";
 							break;
-                                                default: hex.setFillColor(sf::Color::Yellow);
+                        default: hex.setFillColor(sf::Color::Yellow);
                                                   // std::cout << "Yello valkue\n";
 						}
 				}
@@ -311,6 +307,6 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 			  window.draw(num);
 		}
 	}
-        window.draw(hex);
-        tradeNet->draw(window);
+    window.draw(hex);
+    tradeNet->draw(window);
 }
