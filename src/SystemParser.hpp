@@ -23,6 +23,7 @@ public:
     des.states = generateStateText(sys);
     des.description = generateText(sys);
     des.texPlanet.loadFromImage(generatePicture(sys));
+    des.texPlanet.setRepeated(true);
     return des;
   }
 private:

@@ -165,6 +165,24 @@ struct vec2 : public OpenGlVec<float, 2>
   float &x, &y;
 };
 
+struct vec2i : public OpenGlVec<int, 2> {
+  vec2i(int i1, int i2) : 
+    OpenGlVec<int,2>({i1,i2}),
+    x{OpenGlVec<int,2>::operator[](0)},
+    y{OpenGlVec<int,2>::operator[](1)} {}
+
+  vec2i(const OpenGlVec<int,2>& vec) :
+    OpenGlVec<int,2>(vec),
+    x{OpenGlVec<int,2>::operator[](0)},
+    y{OpenGlVec<int,2>::operator[](1)} {}
+  vec2i& operator=(const vec2i& vec) {
+    x = vec.x;
+    y = vec.y;
+    return *this;
+  }
+  int &x, &y;
+};
+
 struct vec3 : public OpenGlVec<float, 3>
 {
   vec3(float f1, float f2, float f3) : 
@@ -307,10 +325,12 @@ sf::Image SystemParser::generatePicture(const System& sys) const
 {
   sf::Image img;
   img.create(500, 500, sf::Color::Yellow);
-  /*vec2 pos(0.f, 0.f);
+  vec2i pos(0, 0);
   sf::Color co;
-  for(;pos.y < 500.; pos.y+=1.)
-    for(pos.x = 0.; pos.x < 500.; pos.x+=1.)
-      img.setPixel(pos.x, pos.y, dcTbx(mainImage(pos)));*/
+  for(;pos.y < 512; pos.y+=1)
+    for(pos.x = 0.; pos.x < 512; pos.x+=1)
+      if ((pos.y / 64 + pos.x / 64)%2) {
+        img.setPixel(pos.x, pos.y, sf::Color::Green);
+      }// dcTbx(mainImage(pos)));
   return img;
 }

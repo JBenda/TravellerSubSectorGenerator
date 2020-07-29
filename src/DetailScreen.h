@@ -2,8 +2,12 @@
 #include <memory>
 #include "System.h"
 #include "SystemParser.hpp"
+
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Shader.hpp>
+
 #include <vector>
+#include <memory>
 #include <string>
 
 class DetailScreen
@@ -35,4 +39,26 @@ private:
   std::vector<sf::Text> _states;
   sf::RectangleShape _planetPic;
   sf::Vector2f _topLeft, _size;
+  static constexpr char PLANET_FRAGMENT_SHADER[] = R"V0G0N(
+uniform sampler2D texture;
+
+#define PI 3.1415926538
+void main() {
+  vec2 p = 2. * gl_TexCoord[0].xy - 1.;
+  float r = length(p);
+  if (r > 1.) {
+    discard;
+  }
+  vec2 uv;
+  uv.x = asin(r) / PI + 0.5;
+  uv.y = acos(p.x/r) / PI; // acos p*[1,0] / r
+  if (uv.x > 1. || uv.y > 1. || uv.x < 0. || uv.y < 0.) {
+    gl_FragColor = vec4(0., 0., 1., 1.);
+  } else {
+    gl_FragColor = texture2D(texture, uv);
+  }
+ }
+  )V0G0N";
+  void loadShader();
+  sf::Shader _planetShader;
 };

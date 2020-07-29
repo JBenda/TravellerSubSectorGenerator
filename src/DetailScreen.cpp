@@ -1,5 +1,9 @@
-  #include "DetailScreen.h"
+#include "DetailScreen.h"
 
+
+void DetailScreen::loadShader() {
+  _planetShader.loadFromMemory(PLANET_FRAGMENT_SHADER, sf::Shader::Type::Fragment);
+}
 
 void DetailScreen::setSystem(const System& sys)
 {
@@ -10,7 +14,7 @@ void DetailScreen::setSystem(const System& sys)
   std::size_t i = 0;
   bool res = _des.states.size() != _states.size();
   for(const std::string& s : _des.states)
-  { 
+  {
     ++i;
     if(i > _states.size())
       _states.push_back(sf::Text(s, _font, _fontSize));
@@ -20,14 +24,16 @@ void DetailScreen::setSystem(const System& sys)
   if(res)
     resize(_des.states.size());
  _descriptoin.setString(_des.description);
+ loadShader();
 }
 
 void DetailScreen::draw(sf::RenderWindow & window)
 {
+  _planetShader.setUniform("texture", *_planetPic.getTexture());
   for(sf::Text& text : _states)
     window.draw(text);
   window.draw(_descriptoin);
-  window.draw(_planetPic);
+  window.draw(_planetPic, &_planetShader);
 }
 
 void DetailScreen::resize(int numberLines)
