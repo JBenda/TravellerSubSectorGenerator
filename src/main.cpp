@@ -83,8 +83,7 @@ int main()
 {
 	const uint32_t v[] = { 0xa56301b9, 0x0dc5caae, 0xeff2fa51 };
 	Xorshift128::instance()->setValues(v[0], v[1], v[2]);
-	Bezirk *bezirk;
-	bezirk = new Bezirk(dim[0], dim[1],0);
+    std::unique_ptr<Bezirk> bezirk = std::make_unique<Bezirk>(dim[0], dim[1], 0);
 
 	loadStuff();
 	sf::RenderWindow window(sf::VideoMode(a + static_cast<int>(dim[0]*dx) * 2, static_cast<int>(2 * dim[1] + 1) * h), "SFML works!");
@@ -119,7 +118,7 @@ int main()
 			{
                 selected = tileUnderMouse(topLeft, window);
 
-                if(std::shared_ptr<System> sys;
+                if(const System* sys;
                   (sys =
                     bezirk->getSystemAt(
                       selected[0],

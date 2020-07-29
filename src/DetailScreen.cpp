@@ -2,15 +2,19 @@
 
 
 void DetailScreen::loadShader() {
-  _planetShader.loadFromMemory(PLANET_FRAGMENT_SHADER, sf::Shader::Type::Fragment);
+  if (!_planetShader) {
+    _planetShader = std::make_unique<sf::Shader>();
+    _planetShader->loadFromMemory(PLANET_FRAGMENT_SHADER, sf::Shader::Type::Fragment);
+  }
 }
 
 void DetailScreen::setSystem(const System& sys)
 {
   if(sys.getId() == _systemId)
     return;
-  _des = _parser.parse(sys);
-  _planetPic.setTexture(&_des.texPlanet);
+  _systemId = sys.getId();
+  _parser.parse(sys, _des);
+  _planetPic.setTexture(_des.texPlanet.get());
   std::size_t i = 0;
   bool res = _des.states.size() != _states.size();
   for(const std::string& s : _des.states)
@@ -39,13 +43,14 @@ void DetailScreen::animationUpdate(float dt) {
 
 void DetailScreen::draw(sf::RenderWindow & window)
 {
-  _planetShader.setUniform("texture", *_planetPic.getTexture());
-  _planetShader.setUniform("rotation",
+  if(_systemId < 0)  { return; }
+  _planetShader->setUniform("texture", *_planetPic.getTexture());
+  _planetShader->setUniform("rotation",
       (_planetRotation * Quat(_planetRotationAxis, _planetAngle)).mat());
   for(sf::Text& text : _states)
     window.draw(text);
   window.draw(_description);
-  window.draw(_planetPic, &_planetShader);
+  window.draw(_planetPic, _planetShader.get());
 }
 
 void DetailScreen::resize(int numberLines)

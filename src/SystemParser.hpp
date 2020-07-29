@@ -12,24 +12,28 @@ public:
   {
     std::vector<std::string> states;
     std::string description;
-    sf::Texture texPlanet;
+    std::unique_ptr<sf::Texture> texPlanet{nullptr};
   };
   SystemParser(const std::string& folderPath) : _fPath(folderPath) {}
   SystemParser(std::string&& folderPath) : _fPath{folderPath} {}
 
-  Description parse(const System& sys) const
+  void parse(const System& sys, Description& des) const
   {
-    Description des;
     des.states = generateStateText(sys);
     des.description = generateText(sys);
-    des.texPlanet.loadFromImage(generatePicture(sys));
-    des.texPlanet.setRepeated(true);
-    return des;
+    sf::Image img = generatePicture(sys);
+    if (!des.texPlanet) {
+      des.texPlanet = std::make_unique<sf::Texture>();
+      des.texPlanet->loadFromImage(img);
+      des.texPlanet->setRepeated(true);
+    } else {
+      des.texPlanet->update(img);
+    }
   }
 private:
   void states(Description& des) const{}
   std::vector<std::string> generateStateText(const System& sys) const
-  { 
+  {
     std::vector<std::string> stat;
     for(int i = 0; i < 12; ++i)
       stat.push_back("Hiy: asasasasasa");

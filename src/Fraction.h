@@ -4,7 +4,7 @@
 
 class Fraction {
 public:
-	enum INFLUENZ {MAIN, OBSKURE, BORDER, SMAL, REKONIZE, IMPORTEND, OP};
+	enum INFLUENZ {MAIN, OBSKURE, BORDER, SMALL, REKONIZE, IMPORTEND, OP};
 	void setName(std::string newName) { name = newName; }
 	void setDescription(std::string des) { description = des; }
 	void setInfluenz(INFLUENZ inf) { influenz = inf; }
@@ -30,7 +30,7 @@ public:
 			else if (power <= 5)
 				influenz = BORDER;
 			else if (power <= 7)
-				influenz = SMAL;
+				influenz = SMALL;
 			else if (power <= 9)
 				influenz = REKONIZE;
 			else if (power <= 11)

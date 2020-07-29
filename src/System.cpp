@@ -11,9 +11,9 @@ System::System(int idNum, int position) : trade()
 	name = "test";
 	if (Dice::role2W6() < 10)	//gas giant
 		setSystemInfo(SYSTEM_INFO::GAS_GIANT, true);
-	
+
 	size = Dice::role2W6() - 2;
-	
+
 	atmosphere = Dice::role2W6() - 7 + size;
 	if (atmosphere > 15)
 		atmosphere = 0;
@@ -44,7 +44,7 @@ System::System(int idNum, int position) : trade()
 		fraction = std::vector<std::shared_ptr<Fraction>> (0);
 		return;
 	}
-	
+
 	fraction.push_back(std::make_shared<Fraction>(population, true));
 	int numFractions = Dice::roleW3();
 	if (fraction[0]->getType() == 0 || fraction[0]->getType() == 7)
@@ -113,7 +113,7 @@ System::System(int idNum, int position) : trade()
 	if(atmosphere >= 2 && water == 0)
 		addTradeCode(Wue);
 }
-void System::addTradeCode(TRADE_COES tr)
+void System::addTradeCode(TRADE_CODES tr)
 {
 	tradeCode.push_back(tr);
 	if (tradeType == OMNI)
@@ -133,10 +133,83 @@ void System::addTradeCode(TRADE_COES tr)
 			tradeType = AGRA;
 	}
 }
+
+char numToSymbol(int i) {
+  if (i < 0) {
+    std::cerr << "number out of range!\n";
+    return 33;
+  }
+  if (i < 10) {
+    return 48 + i;
+  } else {
+    return 55 + i;
+  }
+}
+
+const char* systemInfoToStr(System::SYSTEM_INFO info) {
+  using SI = System::SYSTEM_INFO;
+  static constexpr char const * const NAMES[] = {
+    [SI::SPACE_MARINE] = "M",
+    [SI::SCOUT] = "So",
+    [SI::SINCE] = "Si",
+    [SI::TAS] = "T",
+    [SI::IMPERIUM] = "I",
+    [SI::PIRATES] = "P",
+    [SI::GAS_GIANT] = "GG"
+  };
+  return NAMES[int(info)];
+}
+
+const char* tradeCodeToStr(System::TRADE_CODES tcode) {
+  using TC = System::TRADE_CODES;
+  static constexpr const char* NAMES[] = {
+    [TC::Ag] = "Ag",
+    [TC::Ar] = "Ar",
+    [TC::As] = "As",
+    [TC::Di] = "Di",
+    [TC::Due] = "Due",
+    [TC::Ei] = "Ei",
+    [TC::Ga] = "Ga",
+    [TC::Hi] = "Hi",
+    [TC::In] = "In",
+    [TC::Li] = "Li",
+    [TC::Lo] = "Lo",
+    [TC::Na] = "Na",
+    [TC::Ni] = "Ni",
+    [TC::Oed] = "Oed",
+    [TC::Re] = "Re",
+    [TC::Va] = "Va",
+    [TC::Wa] = "Wa",
+    [TC::Wue] = "Wue"
+  };
+  return NAMES[int(tcode)];
+}
+
 std::string System::getSystemCode() const
 {
 	std::stringstream str;
-	str << "Not worked yet";
+    str << name << " " << pos << " " << spacePort
+      << numToSymbol(size)
+      << numToSymbol(atmosphere)
+      << numToSymbol(water)
+      << numToSymbol(population)
+      << numToSymbol(fraction[0]->getType())
+      << numToSymbol(justize->getJustizLvl()) << '-'
+      << numToSymbol(tekkLvl) << " ";
+    for (int i = 0; i < int(SYSTEM_INFO::END); ++i) {
+      SYSTEM_INFO info = SYSTEM_INFO(i);
+      if(isInfo(info)) {
+        str  << systemInfoToStr(info) << " ";
+      }
+    }
+    for(TRADE_CODES tc : tradeCode) {
+      str << tradeCodeToStr(tc) << " ";
+    }
+    switch(getZone()) {
+      case ZONE::YELLOW: str << "G"; break;
+      case ZONE::RED: str << "R"; break;
+    }
+
 	//space Base, size, atoms, hydro, pop, reg, just, -, techlvl, list base, zone
 	return str.str();
 }

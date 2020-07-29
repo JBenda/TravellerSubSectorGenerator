@@ -324,7 +324,7 @@ sf::Color dcTbx(const OpenGlVec<float,N>& color)
 sf::Image SystemParser::generatePicture(const System& sys) const
 {
   sf::Image img;
-  img.create(500, 500, sf::Color::Yellow);
+  img.create(512, 512, sf::Color::Yellow);
   vec2i pos(0, 0);
   sf::Color co;
   for(;pos.y < 512; pos.y+=1)

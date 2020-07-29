@@ -1,4 +1,6 @@
 #include "TradeNet.h"
+#include "Bezirk.h"
+
 #include <algorithm>
 #include <cassert>
 

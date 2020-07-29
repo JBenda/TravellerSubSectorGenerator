@@ -14,7 +14,7 @@ Bezirk::Bezirk(int x, int y, int wmP)
 	{
 		if (Dice::roleW6() > 3 - wmP)
 		{
-			systems[i] = std::make_shared<System>(numSystems, i);
+            systems.insert(std::make_pair(i, std::make_unique<System>(numSystems, i)));
 			numSystems++;
 		}
 	}
@@ -89,7 +89,7 @@ void Bezirk::calculateRouts()
 	std::cout << "NumSys= " << numSystems << std::endl;
 	map = (uint8_t*)malloc(numSystems * numSystems* sizeof(uint8_t));
 	memset(map, 0, numSystems * numSystems * sizeof(uint8_t));
-	std::map<int, std::shared_ptr<System>>::iterator itr[2];
+	std::map<int, std::unique_ptr<System>>::iterator itr[2];
 	int d;
 	int row;
 	int colum = 0;
@@ -159,8 +159,8 @@ void Bezirk::calculateTrades()
 			{
 				if (tradeType != ttb)
 				{
-					itr->second->addTradeSystem(subI->second);
-                                        subI->second->addTradeSystem(itr->second);
+					itr->second->addTradeSystem(subI->second.get());
+                    subI->second->addTradeSystem(itr->second.get());
 					//andrsrum auch ??
 				}
 			}
@@ -172,49 +172,49 @@ void Bezirk::calculateTradePath()
 {
 }
 
-std::shared_ptr<System> Bezirk::getSystemAt(int x, int y)
+System* Bezirk::getSystemAt(int x, int y)
 {
 	int pos = x + dim[0] * y;
-	std::map<int, std::shared_ptr<System>>::iterator itr;
+	std::map<int, std::unique_ptr<System>>::iterator itr;
 	itr = systems.find(pos);
 	if (itr != systems.end())
-		return systems[pos];
+      return itr->second.get();
 	else
 		return nullptr;
 }
-const std::shared_ptr<System> Bezirk::getSystemAt(int x, int y) const
+const System* Bezirk::getSystemAt(int x, int y) const
 {
 	int pos = x + dim[0] * y;
-	std::map<int, std::shared_ptr<System>>::const_iterator itr;
+	std::map<int, std::unique_ptr<System>>::const_iterator itr;
 	itr = systems.find(pos);
 	if (itr != systems.end())
-		return itr->second;
+		return itr->second.get();
 	else
 		return nullptr;
 }
 
-std::string Bezirk::generateSystemCode(std::shared_ptr<System> sys, int x, int y) const
+std::string Bezirk::generateSystemCode(const System& sys, int x, int y) const
 {
 	std::stringstream str;
-	str << sys->getName() << ' ';
+	str << sys.getName() << ' ';
 	str << (x < 10 ? '0' << x : x) << (y < 10 ? '0' << y : y) << ' ';
-	str << sys->getSystemCode();
+	str << sys.getSystemCode();
 	return str.str();
 }
 std::string Bezirk::getSystemCode(std::string systemName) const
 {
-	std::map<int, std::shared_ptr<System>>::const_iterator itr;
+	typename map_t::const_iterator itr;
 	for (itr = systems.begin(); itr != systems.end(); ++itr)
 	{
 		if (itr->second->getName().compare(systemName) == 0)
-			return generateSystemCode(itr->second, itr->first % dim[0], itr->first / dim[0]);
+			return generateSystemCode(*(itr->second), itr->first % dim[0], itr->first / dim[0]);
 	}
 	return "System not found";
 
 }
 std::string Bezirk::getSystemCode(int x, int y) const
 {
-	return generateSystemCode(getSystemAt(x, y), x, y);
+	return generateSystemCode(*getSystemAt(x, y), x, y);
 }
 
 // values from 0, dw, 2dw, 3dw, 4dw, 5dw
@@ -242,10 +242,10 @@ void Bezirk::draw(sf::RenderWindow & window,  sf::Vector2f topLeft,int dx, int d
 	hex.setOutlineThickness(2);
 	hex.setOutlineColor(sf::Color::Black);
 	bool isSys;
-        const std::shared_ptr<System> selectedSys = getSystemAt(selected[0], selected[1]); 
-        const System::TradeList* const tl = selectedSys == nullptr ? nullptr : selectedSys->getTradeSystems();
-        if(tradeNet->hasChanged())
-          tradeNet->calculatePos(topLeft, dx, h, dy);
+    const System* selectedSys = getSystemAt(selected[0], selected[1]); 
+    const System::TradeList* const tl = selectedSys == nullptr ? nullptr : selectedSys->getTradeSystems();
+    if(tradeNet->hasChanged())
+      tradeNet->calculatePos(topLeft, dx, h, dy);
 	for (int j = 0; j < dim[1]; ++j)
 	{
 		for (int i = 0; i < dim[0]; ++i)

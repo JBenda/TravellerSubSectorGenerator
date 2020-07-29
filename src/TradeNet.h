@@ -4,7 +4,6 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/OpenGL.hpp"
-#include "Bezirk.h"
 
 /** \brief handle Netowork
  * functions: draw Trade routs

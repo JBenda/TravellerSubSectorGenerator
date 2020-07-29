@@ -13,6 +13,8 @@ public:
 	Justize(uint8_t mainFractionType);
 	void setJustizeLvl(JUSTIZE_PARTS kind, int8_t value) { justizeLvl[(uint8_t)kind] = value; }
 	int8_t getJustizLvl(JUSTIZE_PARTS kind) { return justizeLvl[(uint8_t)kind]; }
+    int8_t getJustizLvl() { return justizeLvlAvrg; }
 private:
 	int8_t justizeLvl[(uint8_t)JUSTIZE_PARTS::END - 1];
+    int8_t justizeLvlAvrg;
 };

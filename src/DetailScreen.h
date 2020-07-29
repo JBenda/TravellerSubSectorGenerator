@@ -23,7 +23,7 @@ public:
    * \param size size from description window
    * \param folderPath location wherre pre renderd Informations saved/should be save
    */
-  DetailScreen(const sf::Font& font, sf::Vector2f&& topLeft, sf::Vector2f&& size, const std::string& folderPath) : _parser{folderPath}, _systemId{0}, _planetPic{sf::Vector2f(size.x/2, size.x/2)}, _topLeft{topLeft}, _size{size}, _planetRotationAxis(0,-1,0.5)
+  DetailScreen(const sf::Font& font, sf::Vector2f&& topLeft, sf::Vector2f&& size, const std::string& folderPath) : _parser{folderPath}, _systemId{-1}, _planetPic{sf::Vector2f(size.x/2, size.x/2)}, _topLeft{topLeft}, _size{size}, _states(0), _planetRotationAxis(0,-1,0.5)
   {
     normalize(_planetRotationAxis);
     _font = font;
@@ -78,5 +78,5 @@ void main() {
  }
   )V0G0N";
   void loadShader();
-  sf::Shader _planetShader;
+  std::unique_ptr<sf::Shader> _planetShader{nullptr};
 };
