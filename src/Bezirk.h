@@ -1,12 +1,15 @@
 #pragma once
 
+
 #include "System.h"
+#include "Math.hpp"
+
 #include "SFML/Graphics.hpp"
+
 #include <cstring>
 #include <iterator>
 // #include "TradeNet.h"
 
-#define PI 3.14159265
 class TradeNet;
 class Bezirk
 {

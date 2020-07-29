@@ -3,12 +3,15 @@
 #include "Bezirk.h"
 #include "DetailScreen.h"
 #include "SFML/Graphics.hpp"
+#include "SFML/System/Clock.hpp"
+
 #include <math.h>
+
 
 constexpr std::array<int, 2> dim = { 8, 10 };
 constexpr float a = 40;			//size of hex edge
 constexpr float h = a * (float)sqrt(3) / 2.f;
-constexpr float dw = PI / 3.f;
+constexpr float dw = PI<float> / 3.f;
 constexpr float dx = 1.5f * a;
 constexpr float dy = h;
 constexpr std::array<float, 2> N_UP_RIGHT = {0.8660254037844387f, -0.5f};
@@ -24,7 +27,7 @@ void loadStuff()
 	font.loadFromFile("ariblk.ttf");
 }
 
-std::array<int, 2> taileUnderMouse(const sf::Vector2f& topLeft, const sf::RenderWindow& window) {
+std::array<int, 2> tileUnderMouse(const sf::Vector2f& topLeft, const sf::RenderWindow& window) {
     sf::Vector2i pxpos(sf::Mouse::getPosition(window));
     sf::Vector2f pos = window.mapPixelToCoords(pxpos);
     pos.x -= topLeft.x;
@@ -96,8 +99,17 @@ int main()
       "."
     );
 	window.setFramerateLimit(10);
+    window.clear();
+    bezirk->draw(window,topLeft, dx,dy, dw, h, a,font, selected.data(), dim.data());
+    detailScreen.draw(window);
+    window.display();
+
+    sf::Clock clock;
 	while (window.isOpen())
 	{
+        sf::Time dt = clock.restart();
+        detailScreen.animationUpdate(dt.asSeconds());
+
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -105,7 +117,7 @@ int main()
 				window.close();
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-                selected = taileUnderMouse(topLeft, window);
+                selected = tileUnderMouse(topLeft, window);
 
                 if(std::shared_ptr<System> sys;
                   (sys =

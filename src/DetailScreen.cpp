@@ -23,22 +23,34 @@ void DetailScreen::setSystem(const System& sys)
   }
   if(res)
     resize(_des.states.size());
- _descriptoin.setString(_des.description);
+ _description.setString(_des.description);
+ constexpr struct {float x = 0, y = 0, z = 1;} UP;
+ _planetRotation = Quat(normalize(cross(_planetRotationAxis, UP)),
+     -acos(dot(UP,_planetRotationAxis)));
  loadShader();
+}
+
+void DetailScreen::animationUpdate(float dt) {
+  _planetAngle += ROT_SPEED * dt;
+  while(_planetAngle > 2.f * PI<float>) {
+    _planetAngle -= 2.f * PI<float>;
+  }
 }
 
 void DetailScreen::draw(sf::RenderWindow & window)
 {
   _planetShader.setUniform("texture", *_planetPic.getTexture());
+  _planetShader.setUniform("rotation",
+      (_planetRotation * Quat(_planetRotationAxis, _planetAngle)).mat());
   for(sf::Text& text : _states)
     window.draw(text);
-  window.draw(_descriptoin);
+  window.draw(_description);
   window.draw(_planetPic, &_planetShader);
 }
 
 void DetailScreen::resize(int numberLines)
 {
-  _stateLins = numberLines; 
+  _stateLins = numberLines;
   _fontSize =  (_size.x / numberLines) - 2;
   if(_fontSize > 20)
     _fontSize = 20;
