@@ -3,6 +3,7 @@
 #include "Math.hpp"
 #include "System.h"
 #include "SystemParser.hpp"
+#include "Text.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Shader.hpp>
@@ -37,15 +38,17 @@ public:
 
   void animationUpdate(float dt);
 private:
+  void reorderText();
   static constexpr float ROT_SPEED = PI<float> / 3.f;
   void resize(int numberLines);
   SystemParser::Description _des;
   SystemParser _parser;
-  int _systemId, _fontSize;
+  int _systemId;
+  static constexpr int _fontSize = 14;
   int _stateLins; /**< number of lines to display States */
   sf::Font _font;
-  sf::Text _description;
-  std::vector<sf::Text> _states;
+  Text _description;
+  std::vector<Text> _states;
   sf::RectangleShape _planetPic;
   sf::Vector2f _topLeft, _size;
   Quat _planetRotation;

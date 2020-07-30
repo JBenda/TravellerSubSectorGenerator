@@ -87,6 +87,7 @@ int main()
 
 	loadStuff();
 	sf::RenderWindow window(sf::VideoMode(a + static_cast<int>(dim[0]*dx) * 2, static_cast<int>(2 * dim[1] + 1) * h), "SFML works!");
+
 	sf::Image im;
 	sf::Texture lastScreen;
 	lastScreen.create(window.getSize().x, window.getSize().y);

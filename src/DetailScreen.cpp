@@ -1,5 +1,7 @@
 #include "DetailScreen.h"
 
+#include <SFML/Graphics/Rect.hpp>
+
 
 void DetailScreen::loadShader() {
   if (!_planetShader) {
@@ -21,7 +23,7 @@ void DetailScreen::setSystem(const System& sys)
   {
     ++i;
     if(i > _states.size())
-      _states.push_back(sf::Text(s, _font, _fontSize));
+      _states.push_back(Text(s, _font, _fontSize));
     else
       _states[i-1].setString(s);
   }
@@ -33,6 +35,8 @@ void DetailScreen::setSystem(const System& sys)
      -acos(dot(UP,_planetRotationAxis)));
  loadShader();
 }
+
+void reorderText() {}
 
 void DetailScreen::animationUpdate(float dt) {
   _planetAngle += ROT_SPEED * dt;
@@ -47,7 +51,7 @@ void DetailScreen::draw(sf::RenderWindow & window)
   _planetShader->setUniform("texture", *_planetPic.getTexture());
   _planetShader->setUniform("rotation",
       (_planetRotation * Quat(_planetRotationAxis, _planetAngle)).mat());
-  for(sf::Text& text : _states)
+  for(Text& text : _states)
     window.draw(text);
   window.draw(_description);
   window.draw(_planetPic, _planetShader.get());
@@ -56,14 +60,11 @@ void DetailScreen::draw(sf::RenderWindow & window)
 void DetailScreen::resize(int numberLines)
 {
   _stateLins = numberLines;
-  _fontSize =  (_size.x / numberLines) - 2;
-  if(_fontSize > 20)
-    _fontSize = 20;
 
   sf::Vector2f pos(_topLeft.x + _size.x/2, _topLeft.y);
-  for(sf::Text& text : _states)
+  for(Text& text : _states)
   {
-    text.setCharacterSize(_fontSize);
+    text.setFontSize(_fontSize);
     text.setPosition(pos);
     pos.y += 2 + _fontSize;
   }
