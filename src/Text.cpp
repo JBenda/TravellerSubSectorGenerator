@@ -42,10 +42,11 @@ void Text::setWidth(float width) {
   m_needUpdate = true;
 }
 
+static constexpr float padding = 1.f;
+
 void addGlyphQuad(sf::VertexArray& vertices, const sf::Glyph& glyph,
     const sf::Vector2f& pos, const sf::Color& color)
 {
-  static constexpr float padding = 1.f;
   float left = glyph.bounds.left - padding;
   float top = glyph.bounds.top - padding;
   float right = glyph.bounds.left + glyph.bounds.width + padding;
@@ -82,7 +83,6 @@ void addGlyphQuad(sf::VertexArray& vertices, const sf::Glyph& glyph,
         sf::Vector2f(pos.x + right, pos.y + bottom),
         color,
         sf::Vector2f(u2,v2)));
-  std::cout << "pos: " << pos.x << ", " << pos.y << "\n";
 }
 
 void Text::updateGeometrie() const {
@@ -106,6 +106,8 @@ void Text::updateGeometrie() const {
 
     sf::Vector2f pos(0,m_fontSize);
     uint32_t prevChar = 0;
+    std::string::size_type lastBreak = 0;
+    std::cout << "t: " << m_text << "\n";
     for (int i = 0; i < m_text.size(); ++i) {
       uint32_t curChar = m_text[i];
       if (curChar == '\r') {
@@ -130,8 +132,26 @@ void Text::updateGeometrie() const {
       const sf::Glyph&  glyph = m_font->getGlyph(curChar, m_fontSize, false);
       addGlyphQuad(m_vertices, glyph, pos, m_color);
       pos.x += glyph.advance + letterSpaceing;
-
+      if(m_textWidth != 0 && pos.x > m_textWidth) {
+        std::string::size_type n = m_text.rfind(" ", i);
+        if (n != std::string::npos && n != lastBreak) {
+          lastBreak = n;
+          int begin = m_vertices.getVertexCount() - (i-n)*6;
+          sf::Vector2f d(-(m_vertices[begin].position.x-padding), lineSpaceing);
+          std::cout << "break: " << n << "\n";
+          std::cout << "begin:" << begin << "\n";
+          int end = m_vertices.getVertexCount();
+          for (int v = begin; v < end; ++v) {
+            m_vertices[v].position += d;
+          }
+          std::cout << "p: " << pos.x << ", " << pos.y;
+          pos += d;
+          std::cout << " <> " << pos.x << ", " << pos.y << "\n";
+        }
+      }
     }
+    m_boundingBox.width = m_textWidth;
+    m_boundingBox.height = pos.y + lineSpaceing - m_fontSize;
   }
 }
 
@@ -142,4 +162,14 @@ void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     states.texture = &m_font->getTexture(m_fontSize);
     target.draw(m_vertices, states);
   }
+}
+
+float Text::getHeight() const {
+  updateGeometrie();
+  return m_boundingBox.height;
+}
+
+sf::Rect<float> Text::getBoundingBox() const {
+  updateGeometrie();
+  return getTransform().transformRect(m_boundingBox);
 }

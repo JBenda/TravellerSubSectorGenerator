@@ -10,6 +10,14 @@ void DetailScreen::loadShader() {
   }
 }
 
+void aligneList(std::vector<Text>& texts) {
+  for (int i = 1; i < texts.size(); ++i) {
+    sf::Vector2f h(0,texts[i-1].getHeight());
+    std::cout << "h: " << texts[i-1].getHeight() << "\n";
+    texts[i].setPosition(texts[i-1].getPosition()+h);
+  }
+}
+
 void DetailScreen::setSystem(const System& sys)
 {
   if(sys.getId() == _systemId)
@@ -19,16 +27,21 @@ void DetailScreen::setSystem(const System& sys)
   _planetPic.setTexture(_des.texPlanet.get());
   std::size_t i = 0;
   bool res = _des.states.size() != _states.size();
+  auto bb = _planetPic.getGlobalBounds();
+  float width = _size.x - (bb.left - _topLeft.x + bb.width);
   for(const std::string& s : _des.states)
   {
     ++i;
-    if(i > _states.size())
+    if(i > _states.size()) {
       _states.push_back(Text(s, _font, _fontSize));
-    else
+      _states.back().setWidth(width);
+    } else {
       _states[i-1].setString(s);
+    }
   }
   if(res)
     resize(_des.states.size());
+ aligneList(_states);
  _description.setString(_des.description);
  constexpr struct {float x = 0, y = 0, z = 1;} UP;
  _planetRotation = Quat(normalize(cross(_planetRotationAxis, UP)),

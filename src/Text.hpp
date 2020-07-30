@@ -38,7 +38,7 @@ private:
   std::string m_text;
   const sf::Font* m_font = nullptr;
   int m_fontSize = 14;
-  float m_textWidth = 0;
+  float m_textWidth = 50; ///<< Text tile width for line break. 0 = no line wrapping
   mutable uint64_t m_fontTextureId = 0;
   sf::Color m_color = sf::Color::Magenta;
   mutable sf::Rect<float> m_boundingBox;
